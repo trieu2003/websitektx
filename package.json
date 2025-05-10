@@ -1,0 +1,41 @@
+{
+  "name": "movie-web-reactjs-api",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource/roboto": "^5.1.0",
+    "@tanstack/react-query": "^5.62.0",
+    "axios": "^1.7.7",
+    "font-awesome": "^4.7.0",
+    "framer-motion": "^11.11.17",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.5.0",
+    "react-modal": "^3.16.1",
+    "react-router-dom": "^6.28.0",
+    "styled-components": "^6.1.13",
+    "swiper": "^11.1.15",
+    "tailwindcss": "^3.4.14"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.13.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "globals": "^15.11.0",
+    "postcss": "^8.4.49",
+    "vite": "^5.4.10"
+  }
+}

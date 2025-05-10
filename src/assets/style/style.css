@@ -1,0 +1,204 @@
+
+#root {
+  max-width: 3000px;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Đảm bảo #root chiếm toàn bộ chiều cao màn hình */
+}
+
+/* Reset và đảm bảo body chiếm toàn bộ chiều cao màn hình */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  background-color: #80c6e8;
+}
+
+  .logo-img {
+    height: 80px;
+  }
+  .container {
+    display: flex;
+    width: 100%;
+    max-width: 1000px;
+    margin: 20px auto;
+    gap: 20px;
+  }
+  .notifications {
+    width: 100%;
+    padding: 20px;
+    background-color: #fff;
+
+  }
+  
+  .notification-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #e9ecef;
+    border-left: 4px solid #005ab7;
+    border-radius: 18px;
+    box-shadow:2px 4px 12px #00000014
+  }
+  
+  .notification-item.red {
+    border-left-color: #dc3545;
+  }
+  
+  .login-section {
+    width: 73%;
+    padding: 20px;
+    background-color: #e9ecef;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 18px;
+    box-shadow:2px 4px 12px #00000014
+  }
+  
+  .login-section h1 {
+    color: #005ab7;
+    font-size: 24px;
+    margin-bottom: 5px;
+    
+  }
+  
+  .login-section h2 {
+    color: #005ab7;
+    font-size: 20px;
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  .captcha {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+  }
+  
+  .captcha img {
+    height: 40px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .captcha button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #005ab7;
+  }
+  
+  .login-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #ff6200;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .login-btn:hover {
+    background-color: #e65c00;
+  }
+  
+  .app-links {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .app-links p {
+    margin-bottom: 10px;
+    color: #555;
+  }
+  
+  .app-links img {
+    height: 50px;
+    margin: 0 10px;
+  }
+  
+  .guide-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #00c4cc;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .guide-btn:hover {
+    background-color: #00b0b7;
+  }
+  
+  a {
+    color: #005ab7;
+    text-decoration: none;
+    margin-top: 10px;
+    display: block;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  .noi-quy {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+  }
+  
+  .noi-quy h1 {
+    text-align: center;
+    color: #005ab7;
+    margin-bottom: 20px;
+  }
+  
+  .noi-quy h2 {
+    color: #003a8c;
+    margin-top: 20px;
+  }
+  
+  .noi-quy ul {
+    margin-left: 20px;
+  }
+  
+  .noi-quy li {
+    margin-bottom: 10px;
+  }
+  
+  .noi-quy p {
+    margin-bottom: 15px;
+  }
