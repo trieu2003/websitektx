@@ -1,25 +1,13 @@
 import React from "react";
-import '/src/assets/style/style.css';
-
+import '/src/assets/css/navbar.css';
+import logo from '../assets/images/logo-navbar.png';
 const Navbar = () => {
   return (
-    <nav className="navbar w-100" style={{ backgroundColor: "#005ab7" }}>
-      <div className="container-fluid">
-        <div className="d-flex justify-content-center align-items-center w-100">
-          <a className="navbar-brand m-0">
-            <div
-              className="logo-container"
-              
-            >
-              <img
-                src="logo-navbar.png"
-                alt="Logo HUIT"
-                className="logo-img"
-                style={{ height: "80px" }}
-              />
-            </div>
-          </a>
-        </div>
+    <nav className="navbar w-full bg-[#005ab7] py-2">
+      <div className="max-w-screen-md mx-auto flex justify-center items-center">
+        <a className="navbar-brand" href="/">
+          <img src={logo} alt="Logo HUIT" className="logo-img" />
+        </a>
       </div>
     </nav>
   );

@@ -7,6 +7,7 @@ import Home from "./Pages/Home";
 import HeaderSinhVien from "./components/SinhVien/HeaderSinhVien";
 import LoginForm from "./components/LoginForm"; // Nếu bạn muốn hiển thị form đăng nhập
 import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
 
 function App() {
   const [vaitro, setVaiTro] = useState(null);
@@ -20,6 +21,7 @@ function App() {
 
   return (
     <Router>
+      <Navbar />
       {/* Hiện header nếu là sinh viên */}
       {vaitro === "sinhvien" && <HeaderSinhVien />}
 

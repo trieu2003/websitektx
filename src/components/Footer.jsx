@@ -1,52 +1,88 @@
-
-import { Link } from 'react-router-dom';
-
-function Footer() {
+import React from "react";
+import '../assets/css/footer.css';
+const Footer = () => {
   return (
-    <footer className="bg-black w-full h-auto text-white py-44 sm:py-20  bg-cover bg-center mt-[-20px]" style={{ backgroundImage: "url('../public/images/footerbg.png')" }}>
-      <div className="flex items-center justify-center space-x-3 mb-6"> {/* Sử dụng flex để căn logo và tên vào một dòng */}
-        {/* Logo */}
-        <img src="../public/images/tmovie-55621206.png" alt="theMovies" className="w-12 h-12" />
-        <span className="text-3xl font-bold">theMovies</span> {/* Tên nằm cùng dòng với logo */}
-      </div>
-      <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-32 "> {/* Giảm khoảng cách giữa các cột */}
-          <div className="text-left"></div>
-          
-          {/* Column 1 */}
-          <div className="text-left">
-            <ul className="space-y-2">
-              <li className="text-2xl"><Link to="/home" className="hover:text-red-600 transition-all">Home</Link></li>
-              <li className="text-2xl"><Link to="/live" className="hover:text-red-600 transition-all">Contact us</Link></li>
-              <li className="text-2xl"><Link to="/premium" className="hover:text-red-600 transition-all">Terms of Services</Link></li>
-              <li className="text-2xl"><Link to="/about-us" className="hover:text-red-600 transition-all">About us</Link></li>
-            </ul>
+    <footer className="footer bg-primary text-white py-8 relative">
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Left Section: Contact Info and Social Links */}
+          <div className="space-y-4">
+            <h5 className="text-xl font-bold uppercase tracking-wide">Thông Tin Liên Hệ</h5>
+            <p className="flex items-center">
+              <i className="bi bi-house-door mr-2 text-lg"></i>
+              Trường Đại học Công Thương TP. Hồ Chí Minh
+            </p>
+            <p className="flex items-center">
+              <i className="bi bi-geo-alt mr-2 text-lg"></i>
+              140 Lê Trọng Tấn, Phường Tây Thạnh, Quận Tân Phú, TP.HCM
+            </p>
+            <p className="flex items-center">
+              <i className="bi bi-telephone mr-2 text-lg"></i>
+              0283 8163 318
+            </p>
+            <p className="flex items-center">
+              <i className="bi bi-envelope mr-2 text-lg"></i>
+              info@huit.edu.vn
+            </p>
+            {/* Social Media Links */}
+            <div className="flex space-x-4 mt-4">
+              <a href="https://youtube.com" className="text-white hover:text-gray-300 transition-colors">
+                <i className="bi bi-youtube text-2xl"></i>
+              </a>
+              <a href="https://instagram.com" className="text-white hover:text-gray-300 transition-colors">
+                <i className="bi bi-instagram text-2xl"></i>
+              </a>
+              <a href="https://zalo.me" className="text-white hover:text-gray-300 transition-colors">
+                <i className="bi bi-chat text-2xl"></i>
+              </a>
+              <a href="https://facebook.com" className="text-white hover:text-gray-300 transition-colors">
+                <i className="bi bi-facebook text-2xl"></i>
+              </a>
+              <a href="https://tiktok.com" className="text-white hover:text-gray-300 transition-colors">
+                <i className="bi bi-tiktok text-2xl"></i>
+              </a>
+            </div>
           </div>
 
-          {/* Column 2 */}
-          <div className="text-left">
+          {/* Right Section: Quick Links */}
+          <div className="space-y-4">
+            <h5 className="text-xl font-bold uppercase tracking-wide">Kết Nối Với Chúng Tôi</h5>
             <ul className="space-y-2">
-              <li className="text-2xl"><Link to="/faq" className="hover:text-red-600 transition-all">Live</Link></li>
-              <li className="text-2xl"><Link to="/recent-release" className="hover:text-red-600 transition-all">FAQ</Link></li>
-              <li className="text-2xl"><Link to="/top-imdb" className="hover:text-red-600 transition-all">Premium</Link></li>
+              <li>
+                <a href="#" className="text-white hover:text-gray-300 transition-colors">Thông tin tuyển dụng</a>
+              </li>
+              <li>
+                <a href="#" className="text-white hover:text-gray-300 transition-colors">Bán HUIT</a>
+              </li>
+              <li>
+                <a href="#" className="text-white hover:text-gray-300 transition-colors">Thư điện tử</a>
+              </li>
+              <li>
+                <a href="#" className="text-white hover:text-gray-300 transition-colors">Media</a>
+              </li>
+              <li>
+                <a href="#" className="text-white hover:text-gray-300 transition-colors">Văn bản, quy định</a>
+              </li>
+              <li>
+                <a href="#" className="text-white hover:text-gray-300 transition-colors">Tra cứu văn bằng</a>
+              </li>
+              <li>
+                <a href="#" className="text-white hover:text-gray-300 transition-colors">Elearning</a>
+              </li>
+              <li>
+                <a href="#" className="text-white hover:text-gray-300 transition-colors">Thống kê truy cập</a>
+              </li>
             </ul>
           </div>
+        </div>
 
-          {/* Column 3 */}
-          <div className="text-left">
-            <ul className="space-y-2">
-              <li className="text-2xl"><Link to="/about-us" className="hover:text-red-600 transition-all">You must watch</Link></li>
-              <li className="text-2xl"><Link to="/privacy-policy" className="hover:text-red-600 transition-all">Recent Release</Link></li>
-              <li className="text-2xl"><Link to="/about-us" className="hover:text-red-600 transition-all">Top IMDb</Link></li>
-              <li className="text-2xl"><Link to="/terms" className="hover:text-red-600 transition-all">Privacy Policy</Link></li>
-            </ul>
-          </div>
-          <div className="text-left"></div>
-         
+        {/* Copyright */}
+        <div className="text-center border-t border-gray-600 pt-6 mt-8">
+          <p className="text-sm">© 2025 HUIT.edu.vn. All Rights Reserved.</p>
         </div>
       </div>
     </footer>
   );
-}
+};
 
 export default Footer;

@@ -1,0 +1,25 @@
+.navbar {
+  width: 100%;
+  background-color: #005ab7;
+  padding: 0.1rem 0;
+}
+
+.logo-img {
+  height: 60px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0px auto;
+}
+
+@media (max-width: 768px) {
+  .logo-img {
+    height: 50px; /* Smaller logo on mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-img {
+    height: 50px; /* Further reduced for small screens */
+  }
+}
