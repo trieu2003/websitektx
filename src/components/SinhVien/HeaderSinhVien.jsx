@@ -1,33 +1,34 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { FaAngleDown } from "react-icons/fa";
 
 const menu = [
   {
     title: "Nội trú",
     children: [
-      { title: "Đăng ký nội trú", href: "/sinhvien/noitru" },
-      { title: "Gia hạn đăng ký", href: "/sinhvien/giahan" },
+      { title: "Đăng ký nội trú", to: "/chon-phong" }, // Cập nhật để trỏ đến ChonPhongSinhVien
+      { title: "Gia hạn đăng ký", to: "/sinhvien/giahan" },
     ],
   },
   {
     title: "Phòng ở",
     children: [
-      { title: "Nhận phòng", href: "/sinhvien/nhanphong" },
-      { title: "Trả phòng", href: "/sinhvien/traphong" },
+      { title: "Nhận phòng", to: "/sinhvien/nhanphong" },
+      { title: "Trả phòng", to: "/sinhvien/traphong" },
     ],
   },
   {
     title: "Thanh toán",
     children: [
-      { title: "Hóa đơn & thanh toán", href: "/sinhvien/thanhtoan" },
+      { title: "Hóa đơn & thanh toán", to: "/sinhvien/thanhtoan" },
     ],
   },
   {
     title: "Tiện ích",
     children: [
-      { title: "Gửi yêu cầu sửa chữa", href: "/sinhvien/suachua" },
-      { title: "Đặt chỗ trước", href: "/sinhvien/datcho" },
-      { title: "Tra cứu thông tin", href: "/sinhvien/tracuu" },
+      { title: "Gửi yêu cầu sửa chữa", to: "/sinhvien/suachua" },
+      { title: "Đặt chỗ trước", to: "/sinhvien/datcho" },
+      { title: "Tra cứu thông tin", to: "/sinhvien/tracuu" },
     ],
   },
 ];
@@ -70,12 +71,12 @@ const HeaderSinhVien = () => {
                   <ul className="absolute left-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg z-10">
                     {item.children.map((child, cIdx) => (
                       <li key={cIdx}>
-                        <a
-                          href={child.href}
+                        <Link
+                          to={child.to}
                           className="block px-4 py-2 hover:bg-indigo-100 hover:text-indigo-700"
                         >
                           {child.title}
-                        </a>
+                        </Link>
                       </li>
                     ))}
                   </ul>
