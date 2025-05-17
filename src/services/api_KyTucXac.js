@@ -31,7 +31,34 @@ export const login = async (tenDangNhap, matKhau) => {
 // (Có thể thêm các API khác sau này, ví dụ)
 // export const getDanhSachSinhVien = () => axiosInstance.get("/SinhVien");
 
+// Lấy danh sách phòng
+export const getRooms = async (trangThai = null) => {
+  try {
+    const response = await axiosInstance.get("/Phong", {
+      params: { trangThai }, // Tham số trạng thái (tùy chọn)
+    });
+    return response.data; // Trả về danh sách phòng
+  } catch (error) {
+    // Ném lỗi với thông báo từ server hoặc thông báo mặc định
+    throw error.response?.data || "Lỗi khi lấy danh sách phòng.";
+  }
+};
+
+// Lấy chi tiết phòng theo mã phòng
+export const getRoomDetails = async (maPhong) => {
+  try {
+    const response = await axiosInstance.get(`/Phong/${maPhong}`); // Gọi API với mã phòng
+    return response.data; // Trả về chi tiết phòng
+  } catch (error) {
+    // Ném lỗi với thông báo từ server hoặc thông báo mặc định
+    throw error.response?.data || "Lỗi khi lấy chi tiết phòng.";
+  }
+};
+
+// Xuất các hàm API để sử dụng
 export default {
   login,
-  // getDanhSachSinhVien, ...
+  getRooms,
+  getRoomDetails,
 };
+
