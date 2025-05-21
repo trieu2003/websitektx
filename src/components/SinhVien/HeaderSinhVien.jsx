@@ -6,7 +6,7 @@ const menu = [
   {
     title: "Nội trú",
     children: [
-      { title: "Đăng ký nội trú", to: "/chon-phong" }, // Cập nhật để trỏ đến ChonPhongSinhVien
+      { title: "Đăng ký nội trú", to: "/dangkynoitru" },
       { title: "Gia hạn đăng ký", to: "/sinhvien/giahan" },
     ],
   },
@@ -53,9 +53,13 @@ const HeaderSinhVien = () => {
   }, []);
 
   return (
-    <header className="bg-indigo-700 text-white shadow-md">
-      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">🎓 Ký túc xá</h1>
+    <header className="bg-white text-black shadow-md">
+      <div className="mx-auto px-6 ml-10 py-4 flex justify-between items-center">
+        <img 
+          src="src\assets\images\sv_logo_navbarhome.png" 
+          alt="Ký túc xá Logo" 
+          className="h-12 w-auto"
+        />
         <nav ref={menuRef}>
           <ul className="flex space-x-6">
             {menu.map((item, idx) => (

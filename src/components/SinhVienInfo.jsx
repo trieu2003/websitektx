@@ -4,8 +4,8 @@ import HeaderSinhVien from "./SinhVien/HeaderSinhVien";
 
 const SinhVienInfo = ({ thongTin }) => {
   return (
-    <div><HeaderSinhVien />
-    <div className="max-w-6xl mx-auto mt-10 p-8 bg-white shadow-2xl rounded-3xl">
+    <div>
+    <div className="max-w-6xl ml-20 mx-auto mt-10 p-8 bg-white shadow-2xl rounded-3xl">
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="flex flex-col items-center md:items-start">
