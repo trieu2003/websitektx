@@ -9,7 +9,7 @@ import Navbar from "./components/Navbar";
 import DanhSachPhong from "./Phong/DanhSachPhong";
 import ChiTietPhong from "./Phong/ChiTietPhong";
 import ChonPhongSinhVien from "./Phong/ChonPhongSinhVien";
-import FormDangKyNoiTru from "./components/FormDangKyNoiTru";
+import FormDangKyNoiTru from "./NoiTru/HopDongNoiTru";
 
 function App() {
   const [vaitro, setVaiTro] = useState(null);
