@@ -37,8 +37,12 @@ const HeaderSinhVien = () => {
   const [openIndex, setOpenIndex] = useState(null);
   const menuRef = useRef(null);
 
-  const toggleMenu = (idx) => {
-    setOpenIndex(openIndex === idx ? null : idx);
+  const handleMouseEnter = (idx) => {
+    setOpenIndex(idx);
+  };
+
+  const handleMouseLeave = () => {
+    setOpenIndex(null);
   };
 
   const handleClickOutside = (event) => {
@@ -54,43 +58,67 @@ const HeaderSinhVien = () => {
 
   return (
     <header className="bg-white text-black shadow-md">
-      <div className="mx-auto px-6 ml-10 py-4 flex justify-between items-center">
-        <img 
-          src="src\assets\images\sv_logo_navbarhome.png" 
-          alt="Ký túc xá Logo" 
-          className="h-12 w-auto"
-        />
+      <div className="mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="text-2xl font-bold">KÝ TÚC XÁ HUIT</div>
+        <div className="flex justify-center flex-1">
+          <img
+            src="src/assets/images/sv_logo_navbarhome.png"
+            alt="Ký túc xá Logo"
+            className="h-12 w-auto"
+          />
+        </div>
         <nav ref={menuRef}>
           <ul className="flex space-x-6">
             {menu.map((item, idx) => (
-              <li key={idx} className="relative">
+              <li
+                key={idx}
+                className="relative"
+                onMouseEnter={() => handleMouseEnter(idx)}
+                onMouseLeave={handleMouseLeave}
+              >
                 <button
-                  onClick={() => toggleMenu(idx)}
-                  className="flex items-center space-x-1 hover:text-yellow-300 font-medium focus:outline-none"
+                  className="flex items-center space-x-1 hover:text-yellow-300 font-medium focus:outline-none transition-colors duration-300"
                 >
                   <span>{item.title}</span>
-                  <FaAngleDown className="text-sm mt-1" />
+                  <FaAngleDown
+                    className={`text-sm mt-1 transition-transform duration-300 ${
+                      openIndex === idx ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
-                {openIndex === idx && (
-                  <ul className="absolute left-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg z-10">
-                    {item.children.map((child, cIdx) => (
-                      <li key={cIdx}>
-                        <Link
-                          to={child.to}
-                          className="block px-4 py-2 hover:bg-indigo-100 hover:text-indigo-700"
-                        >
-                          {child.title}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <ul
+                  className={`absolute left-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg z-10 transition-all duration-300 ease-in-out transform ${
+                    openIndex === idx
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-[-10px] pointer-events-none"
+                  } origin-top`}
+                >
+                  {item.children.map((child, cIdx) => (
+                    <li
+                      key={cIdx}
+                      className={`transition-all duration-300 ease-in-out ${
+                        openIndex === idx
+                          ? "opacity-100 translate-y-0"
+                          : "opacity-0 translate-y-[-5px]"
+                      }`}
+                      style={{ transitionDelay: `${cIdx * 50}ms` }}
+                    >
+                      <Link
+                        to={child.to}
+                        className="block px-4 py-2 hover:bg-indigo-100 hover:text-indigo-700 transition-colors duration-200"
+                        onClick={() => setOpenIndex(null)}
+                      >
+                        {child.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </li>
             ))}
           </ul>
         </nav>
         <div>
-          <button className="bg-yellow-400 hover:bg-yellow-300 text-black px-4 py-2 rounded-xl font-semibold transition">
+          <button className="bg-yellow-400 hover:bg-yellow-300 text-black px-4 py-2 rounded-xl font-semibold transition-colors duration-300">
             Đăng xuất
           </button>
         </div>
