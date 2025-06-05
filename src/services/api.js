@@ -105,26 +105,16 @@ export async function getGiuongByChiTietPhong(maChiTietPhong) {
   });
   return res.json();
 }
-export const dangKyGiuong = async (data) => {
-  try {
-    const response = await fetch('/api/NoiQuy/dang-ky', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Lỗi từ server:", errorData);
-      throw new Error(`Lỗi API: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Lỗi khi gọi API:", error);
-    throw error;
-  }
-};
+export async function dangKyGiuong(data) {
+  const res = await fetch("https://localhost:5181/api/HopDongNoiTru/DangKyHopDong", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return await res.json();
+}
+
 
 export default {
   login,

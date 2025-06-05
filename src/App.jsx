@@ -120,6 +120,8 @@ import GuiYeuCauSuaChua from "./pages/GuiYeuCauSuaChua";
 import DatChoTruoc from "./pages/DatChoTruoc";
 import TraCuuThongTin from "./pages/TraCuuThongTin";
 import ThanhToan from "./pages/ThanhToan";
+import HuyThanhToan from "./pages/HuyThanhToan";
+import KetQuaThanhToan from "./pages/KetQuaThanhToan";
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -155,6 +157,8 @@ export default function App() {
     path="/sinhvien/thanhtoan"
     element={user ? <ThanhToan /> : <Navigate to="/login" replace />}
   />
+    <Route path="/ket-qua" element={<KetQuaThanhToan />} />
+        <Route path="/huy" element={<HuyThanhToan />} />
    <Route
     path="/sinhvien/hoadon"
     element={user ? <HoaDon /> : <Navigate to="/login" replace />}

@@ -1,14 +1,12 @@
-import React, { useState } from "react";
-import { traPhong } from "../services/api"; // Đảm bảo đúng đường dẫn
+import { useState } from "react";
+import axios from "axios";
 
 export default function TraPhong() {
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
 
-  // Lấy mã sinh viên từ localStorage
   const user = JSON.parse(localStorage.getItem("user"));
-  const maSV = user?.maSV;
+  const maSV = user?.maSV || user?.MaSV;
 
   const handleTraPhong = async () => {
     if (!maSV) {
@@ -17,39 +15,35 @@ export default function TraPhong() {
     }
 
     setLoading(true);
+    setMessage("");
+
     try {
-      const response = await traPhong({ MaSV: maSV });
-      setMessage(response.message || "Trả phòng thành công.");
-      setResult(response.details || null);
-    } catch (error) {
-      setMessage("Có lỗi xảy ra khi trả phòng.");
-    } finally {
-      setLoading(false);
+      const res = await axios.post("https://localhost:5181/api/Giuong/TraPhong", { maSV });
+      setMessage(res.data.message || "Trả phòng thành công.");
+    } catch (err) {
+      const msg = err.response?.data?.message || "Lỗi khi trả phòng.";
+      setMessage(msg);
     }
+
+    setLoading(false);
   };
 
   return (
-    <div className="p-4 max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Trả phòng</h2>
-
+    <div className="max-w-md mx-auto mt-10 bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-2xl font-bold text-center mb-4 text-red-600">Xác nhận trả phòng</h2>
       <button
         onClick={handleTraPhong}
         disabled={loading}
-        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+        className={`w-full py-2 px-4 font-semibold rounded-md text-white ${
+          loading ? "bg-red-300 cursor-not-allowed" : "bg-red-600 hover:bg-red-700"
+        }`}
       >
         {loading ? "Đang xử lý..." : "Xác nhận trả phòng"}
       </button>
 
-      {message && <p className="mt-4 font-semibold">{message}</p>}
-
-      {result && (
-        <div className="mt-6 p-4 border rounded shadow bg-gray-50">
-          <h3 className="text-lg font-semibold mb-2">Thông tin trả phòng:</h3>
-          <ul className="space-y-1">
-            <li><strong>Phòng đã trả:</strong> {result.TenPhong}</li>
-            <li><strong>Giường:</strong> {result.MaGiuong || "Không xác định"}</li>
-            <li><strong>Ngày trả:</strong> {result.NgayTra || "Không rõ"}</li>
-          </ul>
+      {message && (
+        <div className="mt-4 text-center font-medium text-red-700">
+          {message}
         </div>
       )}
     </div>

@@ -47,6 +47,12 @@ export default function Header({ user }) {
 return (
   <header className="bg-blue-600 text-white p-4">
     <div className="flex items-center justify-between mb-3">
+   
+        <img 
+          src="src\assets\images\sv_logo_navbarhome.png" 
+          alt="Ký túc xá Logo" 
+          className="h-12 w-auto"
+        />
       <h1 className="text-xl font-bold">Ứng dụng Ký túc xá</h1>
       {user ? (
         <div className="flex items-center gap-3">

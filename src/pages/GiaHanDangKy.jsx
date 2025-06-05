@@ -1,75 +1,84 @@
-import React, { useState } from "react";
-import { giaHanHopDong } from "../services/api";
+import { useState } from "react";
+import axios from "axios";
 
 export default function GiaHanHopDong() {
-  const [form, setForm] = useState({
-    maSV: "",
-    ngayKetThucMoi: "",
-    maNamHoc: "",
-    phuongThucThanhToan: "",
-    dotDangKy: "",
+  // ✅ Khởi tạo mặc định ngày kết thúc mới là 1 năm sau
+  const [ngayKetThucMoi, setNgayKetThucMoi] = useState(() => {
+    const oneYearLater = new Date();
+    oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+    return oneYearLater.toISOString().split("T")[0];
   });
-  const [message, setMessage] = useState("");
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  // ✅ Lấy mã sinh viên từ localStorage
+  const user = JSON.parse(localStorage.getItem("user"));
+  const maSV = user?.maSV || user?.MaSV;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await giaHanHopDong({
-      ...form,
-      ngayKetThucMoi: new Date(form.ngayKetThucMoi),
-    });
-    setMessage(response.message || "Đã gửi yêu cầu gia hạn.");
+    setMessage("");
+    setLoading(true);
+
+    if (!maSV) {
+      setMessage("Không tìm thấy mã sinh viên. Vui lòng đăng nhập lại.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await axios.post("https://localhost:5181/api/HopDongNoiTru/GiaHanHopDong", {
+        maSV: maSV,
+        ngayKetThucMoi: ngayKetThucMoi
+      });
+
+      setMessage(response.data.message);
+      console.log(response.data.message);
+    } catch (error) {
+      const errMsg = error.response?.data?.message || "Lỗi khi gửi yêu cầu gia hạn.";
+      setMessage(errMsg);
+    }
+
+    setLoading(false);
   };
 
   return (
-    <div className="p-4 max-w-xl mx-auto bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-4 text-purple-600">Gia hạn hợp đồng</h2>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          name="maSV"
-          value={form.maSV}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          placeholder="Mã sinh viên"
-        />
-        <input
-          name="ngayKetThucMoi"
-          type="date"
-          value={form.ngayKetThucMoi}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-        />
-        <input
-          name="maNamHoc"
-          value={form.maNamHoc}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          placeholder="Mã năm học"
-        />
-        <input
-          name="phuongThucThanhToan"
-          value={form.phuongThucThanhToan}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          placeholder="Phương thức thanh toán"
-        />
-        <input
-          name="dotDangKy"
-          value={form.dotDangKy}
-          onChange={handleChange}
-          className="w-full border p-2 rounded"
-          placeholder="Đợt đăng ký"
-        />
+    <div className="max-w-md mx-auto mt-10 bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-2xl font-bold mb-4 text-center text-indigo-700">Gia hạn hợp đồng</h2>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Ngày kết thúc mới</label>
+          <input
+            type="date"
+            value={ngayKetThucMoi}
+            onChange={(e) => setNgayKetThucMoi(e.target.value)}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
+
         <button
           type="submit"
-          className="w-full bg-purple-600 text-white py-2 rounded"
+          disabled={loading}
+          className={`w-full py-2 px-4 text-white font-semibold rounded-md ${
+            loading ? "bg-indigo-300 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
+          }`}
         >
-          Gửi yêu cầu gia hạn
+          {loading ? "Đang gửi..." : "Gửi yêu cầu gia hạn"}
         </button>
       </form>
-      {message && <p className="mt-3 text-center text-purple-700">{message}</p>}
+
+      {message && (
+        <div
+          className={`mt-4 text-center font-medium ${
+            message.includes("thành công") ? "text-green-600" : "text-red-600"
+          }`}
+        >
+          {message}
+        </div>
+      )}
     </div>
   );
 }
