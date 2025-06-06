@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import Modal from "../components/Modal";
 
 const ThanhToanHoaDon = () => {
-   const [danhSach, setDanhSach] = useState([]);
+  const [danhSach, setDanhSach] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedPhieu, setSelectedPhieu] = useState(null);
+  const [paying, setPaying] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
-  // Lấy mã sinh viên từ localStorage
   const user = JSON.parse(localStorage.getItem("user"));
   const maSV = user?.maSV || user?.MaSV;
+
   useEffect(() => {
     if (!maSV) {
       alert('Không tìm thấy mã sinh viên trong hệ thống.');
@@ -34,24 +37,39 @@ const ThanhToanHoaDon = () => {
     fetchPhieuThu();
   }, [maSV]);
 
-  const handleThanhToan = async (maPhieuThu) => {
+  const handleThanhToan = async () => {
+    if (!selectedPhieu) return;
+
+    setPaying(true);
+    setModalMessage(""); // Reset thông báo
+
     try {
-      const res = await fetch(`https://localhost:5181/api/phieuthu/thanh-toan/${maPhieuThu}`, {
+      const res = await fetch(`https://localhost:5181/api/phieuthu/thanh-toan/${selectedPhieu.maPhieuThu}`, {
         method: 'POST'
       });
 
       const data = await res.json();
-      if (res.ok) {
-        window.location.href = data.url; // Redirect sang PayOS
+      if (res.ok && data.url) {
+        // Chuyển hướng luôn, không cần hiển thị message
+        window.location.href = data.url;
       } else {
-        alert(data.message || 'Không thể thanh toán.');
+        setModalMessage(data.message || "Không thể thanh toán.");
       }
     } catch (err) {
-      alert('Lỗi kết nối máy chủ.');
+      setModalMessage("Lỗi kết nối máy chủ.");
+    } finally {
+      setPaying(false);
     }
   };
 
-  if (!maSV) return <p className="text-center text-red-500 mt-6">Không có mã sinh viên. Vui lòng đăng nhập.</p>;
+  const closeModal = () => {
+    setSelectedPhieu(null);
+    setModalMessage("");
+  };
+
+  if (!maSV) {
+    return <p className="text-center text-red-500 mt-6">Không có mã sinh viên. Vui lòng đăng nhập.</p>;
+  }
 
   return (
     <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
@@ -71,8 +89,8 @@ const ThanhToanHoaDon = () => {
                   <p>Trạng thái: <strong>{phieu.trangThai}</strong></p>
                 </div>
                 <button
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-                  onClick={() => handleThanhToan(phieu.maPhieuThu)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+                  onClick={() => setSelectedPhieu(phieu)}
                   disabled={phieu.trangThai === 'Đã thanh toán'}
                 >
                   Thanh toán
@@ -84,9 +102,31 @@ const ThanhToanHoaDon = () => {
       ) : (
         <p className="text-center text-gray-500">Bạn chưa có phiếu thu nào.</p>
       )}
+
+      {/* Modal xác nhận thanh toán */}
+      <Modal
+        isOpen={!!selectedPhieu}
+        onClose={closeModal}
+        title="Xác nhận thanh toán"
+        showConfirm={!modalMessage}
+        onConfirm={handleThanhToan}
+        confirmText={paying ? "Đang xử lý..." : "Xác nhận"}
+        disabled={paying}
+      >
+        {selectedPhieu && (
+          <>
+            <p>Bạn có chắc chắn muốn thanh toán phiếu thu <strong>#{selectedPhieu.maPhieuThu}</strong> không?</p>
+            <p>Tổng tiền: <strong>{selectedPhieu.tongTien.toLocaleString()} VND</strong></p>
+          </>
+        )}
+        {modalMessage && (
+          <div className="mt-4 p-3 bg-yellow-100 text-yellow-800 rounded-md">
+            {modalMessage}
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
-
 
 export default ThanhToanHoaDon;
