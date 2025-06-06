@@ -1,7 +1,6 @@
-// components/GiuongTrong.jsx
 import React, { useEffect, useState } from 'react';
 
-const GiuongTrong = () => {
+const GiuongTrong = ({ onRowClick }) => {
   const [giuongs, setGiuongs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,16 +29,22 @@ const GiuongTrong = () => {
             <th className="border px-3 py-2">Mã Giường</th>
             <th className="border px-3 py-2">Phòng</th>
             <th className="border px-3 py-2">Loại Phòng</th>
+            <th className="border px-3 py-2">Tầng</th>
             <th className="border px-3 py-2">Trạng Thái</th>
             <th className="border px-3 py-2">Thiết Bị</th>
           </tr>
         </thead>
         <tbody>
           {giuongs.map((g, index) => (
-            <tr key={index} className="hover:bg-gray-50">
+            <tr
+              key={index}
+              className="hover:bg-gray-50 cursor-pointer"
+              onClick={() => onRowClick(g.maPhong, g.maGiuong)}
+            >
               <td className="border px-3 py-2">{g.maGiuong}</td>
               <td className="border px-3 py-2">{g.tenPhong} ({g.maPhong})</td>
               <td className="border px-3 py-2">{g.tenLoai}</td>
+              <td className="border px-3 py-2">{g.tenTang}</td>
               <td className="border px-3 py-2 text-green-600 font-medium">{g.trangThai}</td>
               <td className="border px-3 py-2">
                 {g.danhSachThietBi.length > 0 ? (

@@ -87,30 +87,30 @@ const HeaderSinhVien = () => {
                   />
                 </button>
                 <ul
-                  className={`absolute left-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg z-10 transition-all duration-300 ease-in-out transform ${
-                    openIndex === idx
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-[-10px] pointer-events-none"
-                  } origin-top`}
-                >
+                    className={`absolute left-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg z-10 transform transition-all duration-300 ease-in-out origin-top ${
+                      openIndex === idx
+                        ? "opacity-100 scale-100 visible translate-y-0"
+                        : "opacity-0 scale-95 invisible -translate-y-2"
+                    }`}
+                  >
                   {item.children.map((child, cIdx) => (
                     <li
-                      key={cIdx}
-                      className={`transition-all duration-300 ease-in-out ${
-                        openIndex === idx
-                          ? "opacity-100 translate-y-0"
-                          : "opacity-0 translate-y-[-5px]"
-                      }`}
-                      style={{ transitionDelay: `${cIdx * 50}ms` }}
-                    >
-                      <Link
-                        to={child.to}
-                        className="block px-4 py-2 hover:bg-indigo-100 hover:text-indigo-700 transition-colors duration-200"
-                        onClick={() => setOpenIndex(null)}
+                        key={cIdx}
+                        className={`transition-all duration-300 ease-out ${
+                          openIndex === idx ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
+                        }`}
+                        style={{
+                          transitionDelay: `${cIdx * 60}ms`,
+                        }}
                       >
-                        {child.title}
-                      </Link>
-                    </li>
+                        <Link
+                          to={child.to}
+                          className="block px-4 py-2 hover:bg-indigo-100 hover:text-indigo-700 transition-colors duration-200"
+                          onClick={() => setOpenIndex(null)}
+                        >
+                          {child.title}
+                        </Link>
+                      </li>
                   ))}
                 </ul>
               </li>

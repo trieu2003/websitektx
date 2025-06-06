@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { getAllTang, getPhongByTang, getGiuongTrongByChiTietPhong, dangKyGiuong } from "../services/api";
 import GiuongTrong from "../components/GiuongTrong";
+import Modal from "../components/Modal";
 
 export default function DangKyNoiTru() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const [form, setForm] = useState({
     maPhong: "",
@@ -16,17 +19,22 @@ export default function DangKyNoiTru() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleRowClick = (maPhong, maGiuong) => {
+    setForm({ maPhong, maGiuong });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
 
-   const user = JSON.parse(localStorage.getItem("user"));
-const maSV = user?.maSV; // hoặc user?.MaSV
-
+    const user = JSON.parse(localStorage.getItem("user"));
+    const maSV = user?.maSV;
 
     if (!maSV) {
       setMessage("Không tìm thấy mã sinh viên, vui lòng đăng nhập lại.");
+      setIsSuccess(false);
+      setIsModalOpen(true);
       setLoading(false);
       return;
     }
@@ -40,14 +48,27 @@ const maSV = user?.maSV; // hoặc user?.MaSV
 
       if (response && response.message) {
         setMessage(response.message);
+        setIsSuccess(response.message.includes("thành công"));
       } else {
         setMessage("Đăng ký thành công!");
+        setIsSuccess(true);
       }
+      setIsModalOpen(true);
     } catch (error) {
       console.error("Lỗi đăng ký:", error);
       setMessage("Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.");
+      setIsSuccess(false);
+      setIsModalOpen(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setMessage("");
+    if (isSuccess) {
+      setForm({ maPhong: "", maGiuong: "" }); // Reset form on successful registration
     }
   };
 
@@ -56,7 +77,6 @@ const maSV = user?.maSV; // hoặc user?.MaSV
       {/* Form bên trái */}
       <div className="bg-white p-4 rounded shadow h-fit sticky top-4">
         <h2 className="text-xl font-semibold mb-4">Đăng ký nội trú</h2>
-        {message && <p className="mb-2 text-red-500">{message}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block font-medium">Mã phòng:</label>
@@ -97,8 +117,18 @@ const maSV = user?.maSV; // hoặc user?.MaSV
       {/* Danh sách giường trống bên phải */}
       <div className="bg-white p-4 rounded shadow max-h-[80vh] overflow-y-auto">
         <h3 className="text-lg font-semibold mb-2">Danh sách giường trống</h3>
-        <GiuongTrong />
+        <GiuongTrong onRowClick={handleRowClick} />
       </div>
+
+      {/* Modal thông báo */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title={isSuccess ? "Đăng ký thành công" : "Lỗi đăng ký"}
+        showConfirm={false}
+      >
+        <p className={isSuccess ? "text-green-600" : "text-red-500"}>{message}</p>
+      </Modal>
     </div>
   );
 }

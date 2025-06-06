@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import Modal from "../components/Modal";
 
 export default function GiaHanHopDong() {
   // ✅ Khởi tạo mặc định ngày kết thúc mới là 1 năm sau
@@ -11,6 +12,8 @@ export default function GiaHanHopDong() {
 
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   // ✅ Lấy mã sinh viên từ localStorage
   const user = JSON.parse(localStorage.getItem("user"));
@@ -23,6 +26,8 @@ export default function GiaHanHopDong() {
 
     if (!maSV) {
       setMessage("Không tìm thấy mã sinh viên. Vui lòng đăng nhập lại.");
+      setIsSuccess(false);
+      setIsModalOpen(true);
       setLoading(false);
       return;
     }
@@ -30,17 +35,31 @@ export default function GiaHanHopDong() {
     try {
       const response = await axios.post("https://localhost:5181/api/HopDongNoiTru/GiaHanHopDong", {
         maSV: maSV,
-        ngayKetThucMoi: ngayKetThucMoi
+        ngayKetThucMoi: ngayKetThucMoi,
       });
 
       setMessage(response.data.message);
-      console.log(response.data.message);
+      setIsSuccess(response.data.message.includes("thành công"));
+      setIsModalOpen(true);
     } catch (error) {
       const errMsg = error.response?.data?.message || "Lỗi khi gửi yêu cầu gia hạn.";
       setMessage(errMsg);
+      setIsSuccess(false);
+      setIsModalOpen(true);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setLoading(false);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setMessage("");
+    if (isSuccess) {
+      // Reset ngày kết thúc mới về 1 năm sau
+      const oneYearLater = new Date();
+      oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+      setNgayKetThucMoi(oneYearLater.toISOString().split("T")[0]);
+    }
   };
 
   return (
@@ -62,7 +81,7 @@ export default function GiaHanHopDong() {
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-2 px-4 text-white font-semibold rounded-md ${
+          className={`w-full py- Mohanad2 px-4 text-white font-semibold rounded-md ${
             loading ? "bg-indigo-300 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
           }`}
         >
@@ -70,15 +89,15 @@ export default function GiaHanHopDong() {
         </button>
       </form>
 
-      {message && (
-        <div
-          className={`mt-4 text-center font-medium ${
-            message.includes("thành công") ? "text-green-600" : "text-red-600"
-          }`}
-        >
-          {message}
-        </div>
-      )}
+      {/* Modal thông báo */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title={isSuccess ? "Gia hạn thành công" : "Lỗi gia hạn"}
+        showConfirm={false}
+      >
+        <p className={isSuccess ? "text-green-600" : "text-red-500"}>{message}</p>
+      </Modal>
     </div>
   );
 }
