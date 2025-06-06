@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Modal from "../components/Modal";
 
 export default function GuiYeuCauSuaChua() {
   const [maSV, setMaSV] = useState("");
@@ -8,6 +9,9 @@ export default function GuiYeuCauSuaChua() {
     { maThietBi: "", moTaLoi: "" },
   ]);
   const [message, setMessage] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // ✅ Tự động lấy mã sinh viên từ localStorage
   useEffect(() => {
@@ -34,8 +38,14 @@ export default function GuiYeuCauSuaChua() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!maSV || chiTietSuaChua.length === 0) {
-      setMessage("Không tìm thấy mã sinh viên hoặc chưa có thiết bị.");
+    setLoading(true);
+    setMessage("");
+
+    if (!maSV || chiTietSuaChua.length === 0 || chiTietSuaChua.some(item => !item.maThietBi || !item.moTaLoi)) {
+      setMessage("Vui lòng nhập đầy đủ mã sinh viên, mã thiết bị và mô tả lỗi.");
+      setIsSuccess(false);
+      setIsModalOpen(true);
+      setLoading(false);
       return;
     }
 
@@ -51,11 +61,22 @@ export default function GuiYeuCauSuaChua() {
         payload
       );
       setMessage(res.data.message);
+      setIsSuccess(res.data.message.includes("thành công"));
+      setIsModalOpen(true);
       setMoTa("");
       setChiTietSuaChua([{ maThietBi: "", moTaLoi: "" }]);
     } catch (err) {
       setMessage(err.response?.data?.message || "Đã xảy ra lỗi.");
+      setIsSuccess(false);
+      setIsModalOpen(true);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setMessage("");
   };
 
   return (
@@ -141,17 +162,23 @@ export default function GuiYeuCauSuaChua() {
 
         <button
           type="submit"
-          className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          disabled={loading}
+          className={`w-full py-2 text-white rounded ${
+            loading ? "bg-green-300 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+          }`}
         >
-          Gửi yêu cầu
+          {loading ? "Đang gửi..." : "Gửi yêu cầu"}
         </button>
       </form>
 
-      {message && (
-        <div className="mt-4 text-center font-semibold text-red-600">
-          {message}
-        </div>
-      )}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title={isSuccess ? "Gửi yêu cầu thành công" : "Lỗi gửi yêu cầu"}
+        showConfirm={false}
+      >
+        <p className={isSuccess ? "text-green-600" : "text-red-500"}>{message}</p>
+      </Modal>
     </div>
   );
 }

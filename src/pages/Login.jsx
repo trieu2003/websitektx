@@ -68,7 +68,15 @@ export default function Login({ setUser }) {
             required
           />
         </div>
-
+        <p className="text-sm text-right">
+            <button
+              type="button"
+              className="text-indigo-600 hover:underline"
+              onClick={() => navigate("/forgot-password")}
+            >
+              Quên mật khẩu?
+            </button>
+          </p>
         <button
           type="submit"
           disabled={loading}

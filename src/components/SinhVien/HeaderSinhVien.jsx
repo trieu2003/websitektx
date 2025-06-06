@@ -64,7 +64,7 @@ const HeaderSinhVien = () => {
           <img
             src="src/assets/images/sv_logo_navbarhome.png"
             alt="Ký túc xá Logo"
-            className="h-12 w-auto"
+            className="h-20 w-auto"
           />
         </div>
         <nav ref={menuRef}>

@@ -122,6 +122,7 @@ import TraCuuThongTin from "./pages/TraCuuThongTin";
 import ThanhToan from "./pages/ThanhToan";
 import HuyThanhToan from "./pages/HuyThanhToan";
 import KetQuaThanhToan from "./pages/KetQuaThanhToan";
+import ForgotPassword from "./pages/ForgotPassword"; 
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -171,6 +172,7 @@ export default function App() {
     path="/sinhvien/datcho"
     element={user ? <DatChoTruoc /> : <Navigate to="/login" replace />}
   />
+  <Route path="/forgot-password" element={<ForgotPassword />} />
   <Route
     path="/sinhvien/tracuu"
     element={user ? <TraCuuThongTin /> : <Navigate to="/login" replace />}
