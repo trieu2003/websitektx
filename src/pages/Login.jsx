@@ -15,16 +15,10 @@ export default function Login({ setUser }) {
     setMessage('');
     try {
       const data = await login({ TenDangNhap: tenDangNhap, MatKhau: matKhau });
-
-      if (data.token) {
         setUser(data); // Cập nhật user
-        
-
         localStorage.setItem("user", JSON.stringify(data));
         navigate("/dashboard"); // Chuyển hướng sau khi login thành công
-      } else {
-        setMessage(data.message || "Đăng nhập thất bại");
-      }
+      
     } catch (error) {
       setMessage("Lỗi kết nối server");
     }

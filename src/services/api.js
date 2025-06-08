@@ -8,7 +8,14 @@ export async function login(credentials) {
   });
   return res.json();
 }
-
+async function updateStudentInfo(data) {
+  const res = await fetch(`${API_URL}/SinhVien/cap-nhat`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
 export async function changePassword(payload) {
   const res = await fetch(`${API_URL}/Auth/change-password`, {
     method: "PUT",
@@ -123,8 +130,8 @@ export default {
   traPhong,
   dangKyHopDong,
   giaHanHopDong,
-
-    getAllTang,
+  updateStudentInfo,
+  getAllTang,
   getPhongByTang,
   getAllPhong,
   getChiTietPhongByPhong,

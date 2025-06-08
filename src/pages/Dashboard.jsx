@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
-import api from '../services/api'; // file chứa changePassword()
+import api from '../services/api';
+import Modal from '../components/Modal'; // 🆕 Import Modal component
 
 export default function Dashboard({ user }) {
   const [showForm, setShowForm] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [message, setMessage] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [sdt, setSdt] = useState(user.sdt || '');
+  const [email, setEmail] = useState(user.email || '');
+  const [sdtGiaDinh, setSdtGiaDinh] = useState(user.sdtGiaDinh || '');
+  const [message, setMessage] = useState(null);
+  const [showMessageModal, setShowMessageModal] = useState(false);
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
       setMessage({ type: 'error', text: 'Mật khẩu xác nhận không khớp' });
+      setShowMessageModal(true);
       return;
     }
 
@@ -36,6 +43,31 @@ export default function Dashboard({ user }) {
       setMessage({ type: 'error', text: 'Lỗi kết nối máy chủ' });
     } finally {
       setLoading(false);
+      setShowMessageModal(true);
+    }
+  };
+
+  const handleUpdateInfo = async () => {
+    setLoading(true);
+    try {
+      const res = await api.updateStudentInfo({
+        maSV: user.maSV,
+        sdt,
+        email,
+        sdtGiaDinh,
+      });
+
+      if (res.status === 'success') {
+        setMessage({ type: 'success', text: 'Cập nhật thành công' });
+        setEditMode(false);
+      } else {
+        setMessage({ type: 'error', text: res.message });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Lỗi máy chủ khi cập nhật thông tin' });
+    } finally {
+      setLoading(false);
+      setShowMessageModal(true);
     }
   };
 
@@ -60,11 +92,71 @@ export default function Dashboard({ user }) {
         <li><strong>Giới tính:</strong> {user.gioiTinh}</li>
         <li><strong>Ngày sinh:</strong> {user.ngaySinh}</li>
         <li><strong>Lớp:</strong> {user.lop}</li>
-        <li><strong>SĐT:</strong> {user.sdt}</li>
-        <li><strong>Số CCCD:</strong> {user.soCanCuoc}</li>
+
+        <li>
+          <strong>SĐT:</strong>{' '}
+          {editMode ? (
+            <input
+              type="text"
+              value={sdt}
+              onChange={(e) => setSdt(e.target.value)}
+              className="border px-2 py-1 rounded w-full"
+            />
+          ) : (
+            sdt
+          )}
+        </li>
+
+        <li>
+          <strong>Email:</strong>{' '}
+          {editMode ? (
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="border px-2 py-1 rounded w-full"
+            />
+          ) : (
+            email
+          )}
+        </li>
+
+        <li>
+          <strong>SĐT Gia Đình:</strong>{' '}
+          {editMode ? (
+            <input
+              type="text"
+              value={sdtGiaDinh}
+              onChange={(e) => setSdtGiaDinh(e.target.value)}
+              className="border px-2 py-1 rounded w-full"
+            />
+          ) : (
+            sdtGiaDinh || 'Chưa có'
+          )}
+        </li>
+
         <li><strong>Trạng thái:</strong> {user.trangThai}</li>
         <li><strong>Khoa:</strong> {user.tenKhoa} ({user.maKhoa})</li>
       </ul>
+
+      <div className="mb-4 space-x-4">
+        <button
+          onClick={() => setEditMode(!editMode)}
+          className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 transition"
+        >
+          {editMode ? "Huỷ chỉnh sửa" : "Chỉnh sửa thông tin"}
+        </button>
+
+        {editMode && (
+          <button
+            onClick={handleUpdateInfo}
+            disabled={loading}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+          >
+            {loading ? "Đang lưu..." : "Lưu thay đổi"}
+          </button>
+        )}
+      </div>
 
       <div className="mb-4">
         <button
@@ -117,11 +209,14 @@ export default function Dashboard({ user }) {
         </div>
       )}
 
-      {message && (
-        <div className={`mt-4 p-3 rounded ${message.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-          {message.text}
-        </div>
-      )}
+      {/* ✅ Modal hiển thị thông báo */}
+      <Modal
+        isOpen={showMessageModal}
+        onClose={() => setShowMessageModal(false)}
+        title={message?.type === 'error' ? 'Lỗi' : 'Thành công'}
+      >
+        <p className="text-base">{message?.text}</p>
+      </Modal>
     </div>
   );
 }
