@@ -20,7 +20,7 @@ const ThanhToanHoaDon = () => {
     const fetchPhieuThu = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`https://localhost:5181/api/phieuthu/sinh-vien/${maSV}`);
+        const res = await fetch(`https://localhost:5181/api/PhieuThu/sinh-vien/${maSV}`);
         const data = await res.json();
         if (res.ok) {
           setDanhSach(data);
@@ -41,7 +41,7 @@ const ThanhToanHoaDon = () => {
     if (!selectedPhieu) return;
 
     setPaying(true);
-    setModalMessage(""); // Reset thông báo
+    setModalMessage("");
 
     try {
       const res = await fetch(`https://localhost:5181/api/phieuthu/thanh-toan/${selectedPhieu.maPhieuThu}`, {
@@ -50,7 +50,6 @@ const ThanhToanHoaDon = () => {
 
       const data = await res.json();
       if (res.ok && data.url) {
-        // Chuyển hướng luôn, không cần hiển thị message
         window.location.href = data.url;
       } else {
         setModalMessage(data.message || "Không thể thanh toán.");
@@ -81,12 +80,19 @@ const ThanhToanHoaDon = () => {
         <ul className="divide-y">
           {danhSach.map((phieu) => (
             <li key={phieu.maPhieuThu} className="py-4">
-              <div className="flex justify-between items-center">
-                <div>
+              <div className="flex justify-between items-start">
+                <div className="space-y-1">
                   <p className="font-medium">Mã Phiếu: #{phieu.maPhieuThu}</p>
                   <p>Ngày lập: {new Date(phieu.ngayLap).toLocaleDateString()}</p>
                   <p>Tổng tiền: {phieu.tongTien.toLocaleString()} VND</p>
                   <p>Trạng thái: <strong>{phieu.trangThai}</strong></p>
+                  <p>Người lập: {phieu.tenNhanVien || "Không rõ"}</p>
+                  <p>
+                    Khoản thu:{" "}
+                    <span className="italic text-sm text-gray-700">
+                      {phieu.loaiKhoanThu?.join(", ")}
+                    </span>
+                  </p>
                 </div>
                 <button
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
@@ -117,6 +123,7 @@ const ThanhToanHoaDon = () => {
           <>
             <p>Bạn có chắc chắn muốn thanh toán phiếu thu <strong>#{selectedPhieu.maPhieuThu}</strong> không?</p>
             <p>Tổng tiền: <strong>{selectedPhieu.tongTien.toLocaleString()} VND</strong></p>
+            <p>Loại khoản thu: {selectedPhieu.loaiKhoanThu?.join(", ")}</p>
           </>
         )}
         {modalMessage && (
