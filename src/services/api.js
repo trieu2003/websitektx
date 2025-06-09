@@ -1,13 +1,21 @@
 const API_URL = "https://localhost:5181/api";
-
 export async function login(credentials) {
   const res = await fetch(`${API_URL}/Auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
-  return res.json();
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    // Ném lỗi để frontend bắt được ở Login.jsx
+    throw { response: { data } };
+  }
+
+  return data;
 }
+
 async function updateStudentInfo(data) {
   const res = await fetch(`${API_URL}/SinhVien/cap-nhat`, {
     method: 'PUT',

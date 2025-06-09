@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getAllTang, getPhongByTang, getGiuongTrongByChiTietPhong, dangKyGiuong } from "../services/api";
 import GiuongTrong from "../components/GiuongTrong";
 import Modal from "../components/Modal";
+import HopDongNoiTruPage from "./HopDongNoiTruPage";
 
 export default function DangKyNoiTru() {
   const [message, setMessage] = useState("");
@@ -112,11 +113,14 @@ export default function DangKyNoiTru() {
             {loading ? "Đang đăng ký..." : "Đăng ký"}
           </button>
         </form>
+        <div className="mt-8">
+          <HopDongNoiTruPage />
+        </div>
       </div>
 
       {/* Danh sách giường trống bên phải */}
       <div className="bg-white p-4 rounded shadow max-h-[80vh] overflow-y-auto">
-        <h3 className="text-lg font-semibold mb-2">Danh sách giường trống</h3>
+        {/* <h3 className="text-lg font-semibold mb-2">Danh sách giường trống</h3> */}
         <GiuongTrong onRowClick={handleRowClick} />
       </div>
 

@@ -9,21 +9,37 @@ export default function Login({ setUser }) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate(); // Thêm dòng này
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage('');
-    try {
-      const data = await login({ TenDangNhap: tenDangNhap, MatKhau: matKhau });
-        setUser(data); // Cập nhật user
-        localStorage.setItem("user", JSON.stringify(data));
-        navigate("/dashboard"); // Chuyển hướng sau khi login thành công
-      
-    } catch (error) {
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setMessage('');
+
+  try {
+    const data = await login({ TenDangNhap: tenDangNhap, MatKhau: matKhau });
+
+    if (data.message) {
+      // API trả về lỗi như "Invalid password"
+      setMessage(data.message);
+    } else {
+      setUser(data);
+      localStorage.setItem("user", JSON.stringify(data));
+      setMessage("Đăng nhập thành công");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 500); // đợi một chút cho user thấy message thành công
+    }
+  } catch (error) {
+    if (error.response?.data?.message) {
+      setMessage(error.response.data.message);
+    } else {
       setMessage("Lỗi kết nối server");
     }
-    setLoading(false);
-  };
+  }
+
+  setLoading(false);
+};
+
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-4">
@@ -81,15 +97,16 @@ export default function Login({ setUser }) {
           {loading ? "Đang xử lý..." : "Đăng nhập"}
         </button>
 
-        {message && (
-          <p
-            className={`mt-4 text-center ${
-              message === "Đăng nhập thành công" ? "text-green-600" : "text-red-600"
-            } font-medium`}
-          >
-            {message}
-          </p>
-        )}
+       {message && (
+  <p
+    className={`mt-4 text-center ${
+      message === "Đăng nhập thành công" ? "text-green-600" : "text-red-600"
+    } font-medium`}
+  >
+    {message}
+  </p>
+)}
+
       </form>
     </div>
   );
