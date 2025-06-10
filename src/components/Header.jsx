@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaAngleDown, FaAngleLeft } from "react-icons/fa";
+import { FaAngleDown } from "react-icons/fa";
 
 const sidebarMenu = [
   {
@@ -35,83 +35,71 @@ const sidebarMenu = [
 ];
 
 export default function Header({ user }) {
-  const [openIndex, setOpenIndex] = useState(null);
   const location = useLocation();
 
-  const toggleMenu = (idx) => {
-    setOpenIndex(openIndex === idx ? null : idx);
-  };
-
- // ... phần trên giữ nguyên
-
-return (
-  <header className="bg-blue-600 text-white p-4">
-    <div className="flex items-center justify-between mb-3">
-   
-        <img 
-          src="src\assets\images\sv_logo_navbarhome.png" 
-          alt="Ký túc xá Logo" 
+  return (
+    <header className="bg-blue-600 text-white p-4">
+      <div className="flex items-center justify-between mb-4">
+        <img
+          src="src/assets/images/sv_logo_navbarhome.png"
+          alt="Ký túc xá Logo"
           className="h-12 w-auto"
         />
-      <h1 className="text-xl font-bold">Ứng dụng Ký túc xá</h1>
-      {user ? (
-        <div className="flex items-center gap-3">
-          <img
-            src={`/uploads/${user.anhDaiDien}`}
-            alt="Avatar"
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          <span>Xin chào, {user.hoTen}</span>
+        <h1 className="text-lg font-bold text-center flex-1">
+          ỨNG DỤNG QUẢN LÝ KÝ TÚC XÁ <br />
+          TRƯỜNG ĐẠI HỌC CÔNG THƯƠNG TP HỒ CHÍ MINH
+        </h1>
+        <div className="w-48 flex justify-end">
+          {user ? (
+            <div className="flex items-center gap-2">
+              <img
+                src={`/uploads/${user.anhDaiDien}`}
+                alt="Avatar"
+                className="w-10 h-10 rounded-full object-cover"
+              />
+              <span className="text-sm">Xin chào, {user.hoTen}</span>
+            </div>
+          ) : (
+            <span className="text-sm">Vui lòng đăng nhập</span>
+          )}
         </div>
-      ) : (
-        <span>Vui lòng đăng nhập</span>
-      )}
-    </div>
+      </div>
 
-    {/* Chỉ hiện menu khi đã đăng nhập */}
-    {user && (
-      <nav className="flex space-x-6">
-        {sidebarMenu.map((item, idx) => {
-          const isOpen = openIndex === idx;
-          return (
-            <div key={idx} className="relative">
+      {user && (
+        <nav className="flex space-x-6">
+          {sidebarMenu.map((item, idx) => (
+            <div
+              key={idx}
+              className="relative group"
+            >
               <button
-                onClick={() => toggleMenu(idx)}
-                className="flex items-center gap-1 font-semibold hover:text-yellow-300 focus:outline-none"
+                className="flex items-center gap-1 font-semibold hover:text-yellow-300"
               >
                 {item.title}
-                {isOpen ? (
-                  <FaAngleDown className="inline-block" />
-                ) : (
-                  <FaAngleLeft className="inline-block" />
-                )}
+                <FaAngleDown className="ml-1" />
               </button>
 
-              {isOpen && (
-                <ul className="absolute left-0 mt-1 bg-white text-black rounded shadow-lg min-w-[180px] z-10">
-                  {item.children.map((child, cIdx) => {
-                    const active = location.pathname === child.to;
-                    return (
-                      <li key={cIdx}>
-                        <Link
-                          to={child.to}
-                          className={`block px-4 py-2 hover:bg-yellow-100 ${
-                            active ? "bg-yellow-300 font-bold" : ""
-                          }`}
-                        >
-                          {child.title}
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+              <ul className="absolute left-0 mt-2 bg-white text-black rounded shadow-lg min-w-[200px] z-20 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200">
+                {item.children.map((child, cIdx) => {
+                  const active = location.pathname === child.to;
+                  return (
+                    <li key={cIdx}>
+                      <Link
+                        to={child.to}
+                        className={`block px-4 py-2 hover:bg-yellow-100 transition ${
+                          active ? "bg-yellow-300 font-bold" : ""
+                        }`}
+                      >
+                        {child.title}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
-          );
-        })}
-      </nav>
-    )}
-  </header>
-);
-
+          ))}
+        </nav>
+      )}
+    </header>
+  );
 }

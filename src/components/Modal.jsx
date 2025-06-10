@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import '/src/assets/style/Modal.css';
 const Modal = ({
   isOpen,
   onClose,
@@ -10,6 +10,7 @@ const Modal = ({
 }) => {
   const [isVisible, setIsVisible] = useState(isOpen);
   const [animationState, setAnimationState] = useState("hidden");
+  const [shake, setShake] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -23,6 +24,11 @@ const Modal = ({
     }
   }, [isOpen]);
 
+  const handleBackdropClick = () => {
+    setShake(true);
+    setTimeout(() => setShake(false), 500); // Kết thúc rung sau 0.5s
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -30,14 +36,16 @@ const Modal = ({
       className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ${
         animationState === "fade-in" ? "opacity-100" : "opacity-0"
       }`}
+      onClick={handleBackdropClick}
     >
       <div
-        className={`bg-white rounded-2xl shadow-2xl p-6 mx-4 sm:mx-6 w-full max-w-3xl transition-all duration-300 transform ${
+        className={`bg-white rounded-2xl shadow-2xl p-6 mx-4 sm:mx-6 w-full max-w-3xl transition-all duration-300 transform relative ${
           animationState === "fade-in"
             ? "scale-100 opacity-100"
             : "scale-95 opacity-0"
-        }`}
+        } ${shake ? "animate-shake" : ""}`}
         style={{ maxHeight: "90vh", overflow: "hidden" }}
+        onClick={(e) => e.stopPropagation()} // Ngăn sự kiện click lan ra ngoài
       >
         <div className="flex justify-between items-start border-b pb-3 mb-4">
           <h3 className="text-xl font-semibold text-gray-800">{title}</h3>

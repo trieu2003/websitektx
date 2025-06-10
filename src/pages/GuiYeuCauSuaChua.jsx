@@ -11,6 +11,9 @@ export default function GuiYeuCauSuaChua() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dsYeuCau, setDsYeuCau] = useState([]);
+  const [dsThietBi, setDsThietBi] = useState([]);
+  const [pendingCancelId, setPendingCancelId] = useState(null);
+  
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -19,9 +22,26 @@ export default function GuiYeuCauSuaChua() {
 
     if (ma) {
       fetchDsYeuCau(ma);
+      fetchThietBi(ma);
+      fetchDsThietBi(ma);
     }
   }, []);
-
+  const fetchThietBi = async (ma) => {
+    try {
+      const res = await axios.get(`https://localhost:5181/api/TrangThietBi/thietbi-phong-sinhvien/${ma}`);
+      setDsThietBi(res.data.data);
+    } catch (err) {
+      console.error("Lỗi khi lấy danh sách thiết bị:", err);
+    }
+  };
+  const fetchDsThietBi = async (ma) => {
+    try {
+      const res = await axios.get(`https://localhost:5181/api/TrangThietBi/thietbi-phong-sinhvien/${ma}`);
+      setDsThietBi(res.data.data || []);
+    } catch (err) {
+      console.error("Lỗi khi lấy danh sách thiết bị:", err);
+    }
+  };
   const fetchDsYeuCau = async (ma) => {
     try {
       const res = await axios.get(`https://localhost:5181/api/YeuCauSuaChua/list/${ma}`);
@@ -37,10 +57,13 @@ export default function GuiYeuCauSuaChua() {
         maSV,
         maYCSC,
       });
-      setMessage(res.data);
-      setIsSuccess(true);
+
+      const { success, message } = res.data;
+      setMessage(message);
+      setIsSuccess(success);
       setIsModalOpen(true);
-      fetchDsYeuCau(maSV); // Cập nhật danh sách
+
+      if (success) fetchDsYeuCau(maSV); // Cập nhật danh sách nếu thành công
     } catch (err) {
       setMessage(err.response?.data?.message || "Không thể hủy yêu cầu.");
       setIsSuccess(false);
@@ -97,9 +120,10 @@ export default function GuiYeuCauSuaChua() {
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setMessage("");
-  };
+  setIsModalOpen(false);
+  setMessage("");
+  setPendingCancelId(null);
+};
 
   return (
     <div className="max-w-7xl mx-auto p-6">
@@ -135,15 +159,19 @@ export default function GuiYeuCauSuaChua() {
                 <div key={index} className="border p-3 rounded bg-gray-50 space-y-2 relative">
                   <div>
                     <label className="block text-sm mb-1">Mã thiết bị *</label>
-                    <input
-                      type="text"
+                    <select
                       className="w-full border p-2 rounded"
                       value={item.maThietBi}
-                      onChange={(e) =>
-                        handleChangeChiTiet(index, "maThietBi", e.target.value)
-                      }
+                      onChange={(e) => handleChangeChiTiet(index, "maThietBi", e.target.value)}
                       required
-                    />
+                    >
+                      <option value="">-- Chọn thiết bị --</option>
+                      {dsThietBi.map((tb) => (
+                        <option key={tb.maThietBi} value={tb.maThietBi}>
+                          {tb.tenThietBi} ({tb.maThietBi})
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div>
                     <label className="block text-sm mb-1">Mô tả lỗi *</label>
@@ -190,7 +218,7 @@ export default function GuiYeuCauSuaChua() {
         </div>
 
        {/* Danh sách yêu cầu bên phải */}
-        <div className="bg-white p-6 shadow rounded">
+        <div className="max-h-[600px] overflow-y-auto bg-white p-6 shadow rounded">
           <h3 className="text-xl font-semibold mb-4 text-gray-700">Yêu cầu đã gửi</h3>
           {dsYeuCau.length > 0 ? (
             <ul className="space-y-4">
@@ -200,10 +228,18 @@ export default function GuiYeuCauSuaChua() {
                   <p><strong>Ngày gửi:</strong> {new Date(yc.ngayGui).toLocaleDateString()}</p>
                   <p><strong>Trạng thái:</strong> {yc.trangThai}</p>
                   <button
-                    onClick={() => handleCancelRequest(yc.maYCSC)}
-                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    onClick={() => {
+                      setPendingCancelId(yc.maYCSC);
+                      setIsModalOpen(true);
+                      setMessage("Bạn có chắc muốn hủy yêu cầu này?");
+                      setIsSuccess(null); // để modal không hiện màu xanh/đỏ
+                    }}
+                    disabled={yc.trangThai === "Đã hủy"}
+                    className={`px-3 py-1 rounded text-white 
+                      ${yc.trangThai === "Đã hủy" ? "bg-gray-400 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"}
+                    `}
                   >
-                    Hủy yêu cầu
+                    {yc.trangThai === "Đã hủy" ? "Đã hủy" : "Hủy yêu cầu"}
                   </button>
                 </li>
               ))}
@@ -215,13 +251,33 @@ export default function GuiYeuCauSuaChua() {
       </div>
 
       <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        title={isSuccess ? "Thành công" : "Lỗi"}
-        showConfirm={false}
-      >
-        <p className={isSuccess ? "text-green-600" : "text-red-500"}>{message}</p>
-      </Modal>
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            title={
+              pendingCancelId !== null
+                ? "Xác nhận hủy"
+                : isSuccess
+                ? "Thành công"
+                : "Lỗi"
+            }
+            showConfirm={pendingCancelId !== null}
+            onConfirm={() => {
+              handleCancelRequest(pendingCancelId);
+              // Không đóng modal ngay mà đợi phản hồi xong mới set lại
+            }}
+          >
+            <p
+              className={`${
+                pendingCancelId !== null
+                  ? "text-gray-700"
+                  : isSuccess
+                  ? "text-green-600"
+                  : "text-red-500 shake"
+              }`}
+            >
+              {message}
+            </p>
+          </Modal>
     </div>
   );
 }
