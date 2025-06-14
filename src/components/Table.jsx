@@ -1,55 +1,51 @@
-import React from "react";
-import "/src/assets/style/Table.css"; // Nếu cần giữ style riêng, vẫn có thể để lại
+import React from 'react';
 
 const Table = ({ columns, data, onRowClick }) => {
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-md shadow-md">
+    <div className="overflow-x-auto rounded-md shadow-md border border-gray-300">
+      <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-blue-600 text-white">
           <tr>
-            {columns.map((column, index) => (
+            {columns.map((col) => (
               <th
-                key={index}
+                key={col.accessor}
                 className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider"
               >
-                {column.title}
+                {col.header}
               </th>
             ))}
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {data.map((row, rowIndex) => (
-            <tr
-              key={rowIndex}
-              onClick={() => onRowClick && onRowClick(row)}
-              className={`hover:bg-blue-50 transition-colors duration-200 ${
-                onRowClick ? "cursor-pointer" : ""
-              }`}
-            >
-              {columns.map((column, colIndex) => {
-                const rawValue = row[column.field];
-                let displayValue = rawValue;
-
-                // Tự động format ngày nếu là kiểu date
-                if (
-                  rawValue &&
-                  column.isDate &&
-                  !isNaN(Date.parse(rawValue))
-                ) {
-                  displayValue = new Date(rawValue).toLocaleDateString("vi-VN");
-                }
-
-                return (
+          {data.length === 0 ? (
+            <tr>
+              <td
+                colSpan={columns.length}
+                className="px-4 py-4 text-center text-sm text-gray-500"
+              >
+                Không có dữ liệu
+              </td>
+            </tr>
+          ) : (
+            data.map((row, rowIndex) => (
+              <tr
+                key={rowIndex}
+                onClick={() => onRowClick?.(row.maPhong, row.maGiuong)}
+                className="cursor-pointer hover:bg-gray-100 transition"
+              >
+                {columns.map((col) => (
                   <td
-                    key={colIndex}
+                    key={col.accessor}
                     className="px-4 py-2 whitespace-nowrap text-sm text-gray-900"
                   >
-                    {displayValue ?? ""}
+                    {typeof col.cell === 'function'
+                      ? col.cell(row)
+                      : row[col.accessor]}
                   </td>
-                );
-              })}
-            </tr>
-          ))}
+                ))}
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

@@ -13,7 +13,6 @@ export default function GuiYeuCauSuaChua() {
   const [dsYeuCau, setDsYeuCau] = useState([]);
   const [dsThietBi, setDsThietBi] = useState([]);
   const [pendingCancelId, setPendingCancelId] = useState(null);
-  
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -22,18 +21,10 @@ export default function GuiYeuCauSuaChua() {
 
     if (ma) {
       fetchDsYeuCau(ma);
-      fetchThietBi(ma);
       fetchDsThietBi(ma);
     }
   }, []);
-  const fetchThietBi = async (ma) => {
-    try {
-      const res = await axios.get(`https://localhost:5181/api/TrangThietBi/thietbi-phong-sinhvien/${ma}`);
-      setDsThietBi(res.data.data);
-    } catch (err) {
-      console.error("Lỗi khi lấy danh sách thiết bị:", err);
-    }
-  };
+
   const fetchDsThietBi = async (ma) => {
     try {
       const res = await axios.get(`https://localhost:5181/api/TrangThietBi/thietbi-phong-sinhvien/${ma}`);
@@ -42,6 +33,7 @@ export default function GuiYeuCauSuaChua() {
       console.error("Lỗi khi lấy danh sách thiết bị:", err);
     }
   };
+
   const fetchDsYeuCau = async (ma) => {
     try {
       const res = await axios.get(`https://localhost:5181/api/YeuCauSuaChua/list/${ma}`);
@@ -61,13 +53,17 @@ export default function GuiYeuCauSuaChua() {
       const { success, message } = res.data;
       setMessage(message);
       setIsSuccess(success);
-      setIsModalOpen(true);
 
-      if (success) fetchDsYeuCau(maSV); // Cập nhật danh sách nếu thành công
+      if (success) {
+        // Huỷ thành công: đóng modal sau 1s và reset
+        fetchDsYeuCau(maSV);
+        setTimeout(() => {
+          handleCloseModal(); // Đóng modal và reset pendingCancelId
+        }, 1000);
+      }
     } catch (err) {
       setMessage(err.response?.data?.message || "Không thể hủy yêu cầu.");
       setIsSuccess(false);
-      setIsModalOpen(true);
     }
   };
 
@@ -109,7 +105,7 @@ export default function GuiYeuCauSuaChua() {
       setIsModalOpen(true);
       setMoTa("");
       setChiTietSuaChua([{ maThietBi: "", moTaLoi: "" }]);
-      fetchDsYeuCau(maSV); // Refresh
+      fetchDsYeuCau(maSV);
     } catch (err) {
       setMessage(err.response?.data?.message || "Đã xảy ra lỗi.");
       setIsSuccess(false);
@@ -120,15 +116,15 @@ export default function GuiYeuCauSuaChua() {
   };
 
   const handleCloseModal = () => {
-  setIsModalOpen(false);
-  setMessage("");
-  setPendingCancelId(null);
-};
+    setIsModalOpen(false);
+    setMessage("");
+    setPendingCancelId(null);
+    setIsSuccess(null);
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
         {/* Form gửi yêu cầu */}
         <div className="bg-white p-6 shadow rounded">
           <h2 className="text-2xl font-bold text-blue-600 mb-4">Gửi Yêu Cầu Sửa Chữa</h2>
@@ -217,33 +213,49 @@ export default function GuiYeuCauSuaChua() {
           </form>
         </div>
 
-       {/* Danh sách yêu cầu bên phải */}
+        {/* Danh sách yêu cầu sử dụng bảng */}
         <div className="max-h-[600px] overflow-y-auto bg-white p-6 shadow rounded">
           <h3 className="text-xl font-semibold mb-4 text-gray-700">Yêu cầu đã gửi</h3>
           {dsYeuCau.length > 0 ? (
-            <ul className="space-y-4">
-              {dsYeuCau.map((yc) => (
-                <li key={yc.maYCSC} className="border rounded p-4 shadow-sm space-y-2">
-                  <p><strong>Mã yêu cầu:</strong> #{yc.maYCSC}</p>
-                  <p><strong>Ngày gửi:</strong> {new Date(yc.ngayGui).toLocaleDateString()}</p>
-                  <p><strong>Trạng thái:</strong> {yc.trangThai}</p>
-                  <button
-                    onClick={() => {
-                      setPendingCancelId(yc.maYCSC);
-                      setIsModalOpen(true);
-                      setMessage("Bạn có chắc muốn hủy yêu cầu này?");
-                      setIsSuccess(null); // để modal không hiện màu xanh/đỏ
-                    }}
-                    disabled={yc.trangThai === "Đã hủy"}
-                    className={`px-3 py-1 rounded text-white 
-                      ${yc.trangThai === "Đã hủy" ? "bg-gray-400 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"}
-                    `}
-                  >
-                    {yc.trangThai === "Đã hủy" ? "Đã hủy" : "Hủy yêu cầu"}
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <div className="overflow-x-auto rounded-md shadow-md border border-gray-300">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-blue-600 text-white">
+                  <tr>
+                    <th className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">Mã yêu cầu</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">Ngày gửi</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">Trạng thái</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">Hành động</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {dsYeuCau.map((yc) => (
+                    <tr key={yc.maYCSC}>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">#{yc.maYCSC}</td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{new Date(yc.ngayGui).toLocaleDateString()}</td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{yc.trangThai}</td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                        <button
+                          onClick={() => {
+                            setPendingCancelId(yc.maYCSC);
+                            setIsModalOpen(true);
+                            setMessage("Bạn có chắc muốn hủy yêu cầu này?");
+                            setIsSuccess(null);
+                          }}
+                          disabled={yc.trangThai === "Đã hủy"}
+                          className={`px-3 py-1 rounded text-white ${
+                            yc.trangThai === "Đã hủy"
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-red-500 hover:bg-red-600"
+                          }`}
+                        >
+                          {yc.trangThai === "Đã hủy" ? "Đã hủy" : "Hủy"}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ) : (
             <p className="text-gray-500">Bạn chưa gửi yêu cầu nào.</p>
           )}
@@ -251,33 +263,34 @@ export default function GuiYeuCauSuaChua() {
       </div>
 
       <Modal
-            isOpen={isModalOpen}
-            onClose={handleCloseModal}
-            title={
-              pendingCancelId !== null
-                ? "Xác nhận hủy"
-                : isSuccess
-                ? "Thành công"
-                : "Lỗi"
-            }
-            showConfirm={pendingCancelId !== null}
-            onConfirm={() => {
-              handleCancelRequest(pendingCancelId);
-              // Không đóng modal ngay mà đợi phản hồi xong mới set lại
-            }}
-          >
-            <p
-              className={`${
-                pendingCancelId !== null
-                  ? "text-gray-700"
-                  : isSuccess
-                  ? "text-green-600"
-                  : "text-red-500 shake"
-              }`}
-            >
-              {message}
-            </p>
-          </Modal>
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title={
+          pendingCancelId !== null
+            ? "Xác nhận hủy"
+            : isSuccess
+            ? "Thành công"
+            : "Lỗi"
+        }
+        showConfirm={pendingCancelId !== null}
+        onConfirm={() => {
+          if (pendingCancelId !== null) {
+            handleCancelRequest(pendingCancelId);
+          }
+        }}
+      >
+        <p
+          className={`${
+            pendingCancelId !== null
+              ? "text-gray-700"
+              : isSuccess
+              ? "text-green-600"
+              : "text-red-500 shake"
+          }`}
+        >
+          {message}
+        </p>
+      </Modal>
     </div>
   );
 }

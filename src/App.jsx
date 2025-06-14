@@ -130,7 +130,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Header user={user} />
-      <main className="min-h-[80vh] p-4 bg-gray-100">
+      <main className="bg-gray-100">
         <Routes>
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route

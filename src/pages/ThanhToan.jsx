@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import Modal from "../components/Modal";
 
 const ThanhToanHoaDon = () => {
@@ -7,28 +7,39 @@ const ThanhToanHoaDon = () => {
   const [selectedPhieu, setSelectedPhieu] = useState(null);
   const [paying, setPaying] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-
+  const [isNhomTruong, setIsNhomTruong] = useState(false);
+  const [modalNhomVisible, setModalNhomVisible] = useState(false);
+  const [modalNhomMessage, setModalNhomMessage] = useState("");
   const user = JSON.parse(localStorage.getItem("user"));
   const maSV = user?.maSV || user?.MaSV;
 
   useEffect(() => {
     if (!maSV) {
-      alert('Không tìm thấy mã sinh viên trong hệ thống.');
+      alert("Không tìm thấy mã sinh viên trong hệ thống.");
       return;
     }
 
     const fetchPhieuThu = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`https://localhost:5181/api/PhieuThu/sinh-vien/${maSV}`);
+        const res = await fetch(
+          `https://localhost:5181/api/PhieuThu/xem-phieu-thu`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ MaSV: maSV }),
+          }
+        );
         const data = await res.json();
         if (res.ok) {
           setDanhSach(data);
+          const nhomTruong = data.some((p) => p.maSV !== maSV); // Nếu có phiếu người khác → là trưởng nhóm
+          setIsNhomTruong(nhomTruong);
         } else {
-          alert(data.message || 'Không tìm thấy phiếu thu.');
+          alert(data.message || "Không lấy được phiếu thu.");
         }
       } catch (err) {
-        alert('Lỗi kết nối máy chủ.');
+        alert("Lỗi kết nối máy chủ.");
       } finally {
         setLoading(false);
       }
@@ -39,15 +50,16 @@ const ThanhToanHoaDon = () => {
 
   const handleThanhToan = async () => {
     if (!selectedPhieu) return;
-
     setPaying(true);
     setModalMessage("");
 
     try {
-      const res = await fetch(`https://localhost:5181/api/phieuthu/thanh-toan/${selectedPhieu.maPhieuThu}`, {
-        method: 'POST'
-      });
-
+      const res = await fetch(
+        `https://localhost:5181/api/phieuthu/thanh-toan/${selectedPhieu.maPhieuThu}`,
+        {
+          method: "POST",
+        }
+      );
       const data = await res.json();
       if (res.ok && data.url) {
         window.location.href = data.url;
@@ -61,52 +73,133 @@ const ThanhToanHoaDon = () => {
     }
   };
 
+  const handleThanhToanNhom = async () => {
+    setPaying(true);
+    setModalNhomMessage("");
+    try {
+      const res = await fetch(
+        `https://localhost:5181/api/ThanhToan/truongnhom/thanh-toan-dien-nuoc`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ MaSV: maSV }),
+        }
+      );
+      const data = await res.json();
+
+      if (res.ok && data.url) {
+        window.location.href = data.url;
+      } else {
+        setModalNhomMessage(data.message || "Không thể thanh toán nhóm.");
+        setModalNhomVisible(true);
+      }
+    } catch (err) {
+      setModalNhomMessage("Lỗi kết nối máy chủ.");
+      setModalNhomVisible(true);
+    } finally {
+      setPaying(false);
+    }
+  };
+
   const closeModal = () => {
     setSelectedPhieu(null);
     setModalMessage("");
   };
 
-  if (!maSV) {
-    return <p className="text-center text-red-500 mt-6">Không có mã sinh viên. Vui lòng đăng nhập.</p>;
-  }
-
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
-      <h1 className="text-2xl font-semibold text-center mb-4">Danh sách Phiếu thu của bạn</h1>
+    <div className="p-6 max-w-6xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4 text-center text-blue-700">
+        Danh sách Phiếu thu
+      </h1>
 
       {loading ? (
         <p className="text-center">Đang tải dữ liệu...</p>
-      ) : danhSach.length > 0 ? (
-        <ul className="divide-y">
-          {danhSach.map((phieu) => (
-            <li key={phieu.maPhieuThu} className="py-4">
-              <div className="flex justify-between items-start">
-                <div className="space-y-1">
-                  <p className="font-medium">Mã Phiếu: #{phieu.maPhieuThu}</p>
-                  <p>Ngày lập: {new Date(phieu.ngayLap).toLocaleDateString()}</p>
-                  <p>Tổng tiền: {phieu.tongTien.toLocaleString()} VND</p>
-                  <p>Trạng thái: <strong>{phieu.trangThai}</strong></p>
-                  <p>Người lập: {phieu.tenNhanVien || "Không rõ"}</p>
-                  <p>
-                    Khoản thu:{" "}
-                    <span className="italic text-sm text-gray-700">
-                      {phieu.loaiKhoanThu?.join(", ")}
-                    </span>
-                  </p>
-                </div>
-                <button
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
-                  onClick={() => setSelectedPhieu(phieu)}
-                  disabled={phieu.trangThai === 'Đã thanh toán'}
-                >
-                  Thanh toán
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+      ) : danhSach.length === 0 ? (
+        <p className="text-center text-gray-500">Không có phiếu thu nào.</p>
       ) : (
-        <p className="text-center text-gray-500">Bạn chưa có phiếu thu nào.</p>
+        <>
+          {isNhomTruong && (
+            <div className="mb-4 text-center">
+              <button
+                onClick={handleThanhToanNhom}
+                disabled={paying}
+                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:bg-gray-400"
+              >
+                {paying ? "Đang xử lý..." : "Thanh toán nhóm (Điện - Nước)"}
+              </button>
+            </div>
+          )}
+
+          <div className="overflow-x-auto rounded-md shadow-md border border-gray-300">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-blue-600 text-white">
+                <tr>
+                  <th className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">
+                    Mã phiếu
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">
+                    Sinh viên
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">
+                    Ngày lập
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">
+                    Tổng tiền
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">
+                    Trạng thái
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">
+                    Nhân viên
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider">
+                    Khoản thu
+                  </th>
+                  <th className="px-4 py-2"></th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {danhSach.map((phieu) => (
+                  <tr key={phieu.maPhieuThu}>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                      #{phieu.maPhieuThu}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                      {phieu.hoTen || "Không rõ"}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                      {new Date(phieu.ngayLap).toLocaleDateString("vi-VN")}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                      {phieu.tongTien.toLocaleString("vi-VN")} VND
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                      {phieu.trangThai}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                      {phieu.maNV || "Không rõ"}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                      {phieu.chiTietPhieuThu?.map(c => c.loaiKhoanThu).join(", ")}
+                    </td>
+                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
+                      {!isNhomTruong &&
+                        phieu.trangThai === "Chưa thanh toán" &&
+                        phieu.maSV === maSV && (
+                          <button
+                            className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700"
+                            onClick={() => setSelectedPhieu(phieu)}
+                          >
+                            Thanh toán
+                          </button>
+                        )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {/* Modal xác nhận thanh toán */}
@@ -121,9 +214,22 @@ const ThanhToanHoaDon = () => {
       >
         {selectedPhieu && (
           <>
-            <p>Bạn có chắc chắn muốn thanh toán phiếu thu <strong>#{selectedPhieu.maPhieuThu}</strong> không?</p>
-            <p>Tổng tiền: <strong>{selectedPhieu.tongTien.toLocaleString()} VND</strong></p>
-            <p>Loại khoản thu: {selectedPhieu.loaiKhoanThu?.join(", ")}</p>
+            <p>
+              Bạn có chắc chắn muốn thanh toán phiếu thu{" "}
+              <strong>#{selectedPhieu.maPhieuThu}</strong> không?
+            </p>
+            <p>
+              Tổng tiền:{" "}
+              <strong>
+                {selectedPhieu.tongTien.toLocaleString("vi-VN")} VND
+              </strong>
+            </p>
+            <p>
+              Loại khoản thu:{" "}
+              {selectedPhieu.chiTietPhieuThu
+                ?.map((c) => c.loaiKhoanThu)
+                .join(", ")}
+            </p>
           </>
         )}
         {modalMessage && (
@@ -131,6 +237,14 @@ const ThanhToanHoaDon = () => {
             {modalMessage}
           </div>
         )}
+      </Modal>
+      <Modal
+        isOpen={modalNhomVisible}
+        onClose={() => setModalNhomVisible(false)}
+        title="Thông báo thanh toán nhóm"
+        showConfirm={false}
+      >
+        <p className="text-gray-800">{modalNhomMessage}</p>
       </Modal>
     </div>
   );
