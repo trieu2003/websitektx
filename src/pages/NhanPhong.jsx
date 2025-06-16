@@ -49,7 +49,7 @@ export default function NhanPhong() {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto mt-10 bg-white rounded-lg shadow-md p-6">
+    <div className="w-full max-w-3xl mx-auto mt-10 bg-gray-200 rounded-lg shadow-md p-6">
 
       <h2 className="text-2xl font-bold text-center mb-6 text-green-600">Xác nhận nhận phòng</h2>
 

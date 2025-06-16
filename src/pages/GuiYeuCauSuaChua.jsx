@@ -126,7 +126,7 @@ export default function GuiYeuCauSuaChua() {
     <div className="max-w-7xl mx-auto p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Form gửi yêu cầu */}
-        <div className="bg-white p-6 shadow rounded">
+        <div className="bg-gray-200 p-6 shadow rounded">
           <h2 className="text-2xl font-bold text-blue-600 mb-4">Gửi Yêu Cầu Sửa Chữa</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -214,7 +214,7 @@ export default function GuiYeuCauSuaChua() {
         </div>
 
         {/* Danh sách yêu cầu sử dụng bảng */}
-        <div className="max-h-[600px] overflow-y-auto bg-white p-6 shadow rounded">
+        <div className="max-h-[600px] overflow-y-auto bg-gray-200 p-6 shadow rounded">
           <h3 className="text-xl font-semibold mb-4 text-gray-700">Yêu cầu đã gửi</h3>
           {dsYeuCau.length > 0 ? (
             <div className="overflow-x-auto rounded-md shadow-md border border-gray-300">

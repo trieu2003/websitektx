@@ -23,7 +23,7 @@ const GiuongTrong = ({ onRowClick }) => {
     { header: 'Phòng', accessor: 'maPhong', cell: (row) => `${row.tenPhong} (${row.maPhong})` },
     { header: 'Loại Phòng', accessor: 'tenLoai' },
     { header: 'Tầng', accessor: 'tenTang' },
-    { header: 'Trạng Thái', accessor: 'trangThai', cell: (row) => <span className="text-green-300 font-medium">{row.trangThai}</span> },
+    { header: 'Trạng Thái', accessor: 'trangThai', cell: (row) => <span className="text-green-500 font-medium">{row.trangThai}</span> },
     {
       header: 'Thiết Bị',
       accessor: 'danhSachThietBi',
@@ -43,7 +43,7 @@ const GiuongTrong = ({ onRowClick }) => {
   if (loading) return <p className="text-gray-500">Đang tải danh sách giường...</p>;
 
   return (
-    <div className="p-1 max-w-3xl mx-auto bg-white rounded shadow">
+    <div className="bg-gray-200 p-1 max-w-3xl mx-auto bg-white rounded shadow">
       <h1 className="text-2xl font-bold mb-6 text-center text-blue-700">Danh sách giường trống</h1>
       <Table columns={columns} data={giuongs} onRowClick={onRowClick} />
     </div>

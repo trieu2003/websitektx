@@ -33,7 +33,7 @@ export default function TraPhong() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 bg-white rounded-lg shadow-md p-6">
+    <div className="max-w-md mx-auto mt-10 bg-gray-200 rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold text-center mb-4 text-red-600">Xác nhận trả phòng</h2>
 
       <button

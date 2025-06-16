@@ -4,8 +4,9 @@ const images = [
   "src/assets/images/login1.webp",
   "src/assets/images/login2.jpg",
   "src/assets/images/login3.jpeg",
-  "src/assets/images/footer.jpg",
+  "src/assets/images/login5.jpg",
   "src/assets/images/login4.JPG",
+  "src/assets/images/login6.webp",
 ];
 export default function BackgroundSlideshow() {
   const [index, setIndex] = useState(0);

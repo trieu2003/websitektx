@@ -76,7 +76,7 @@ export default function DangKyNoiTru() {
   return (
     <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Form bên trái */}
-      <div className="bg-white p-4 rounded shadow h-fit sticky top-4">
+      <div className="bg-gray-200 p-4 rounded shadow h-fit sticky top-4">
         <h2 className="text-xl font-semibold mb-4">Đăng ký nội trú</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

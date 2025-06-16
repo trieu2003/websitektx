@@ -63,7 +63,7 @@ export default function GiaHanHopDong() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 bg-white rounded-lg shadow-md p-6">
+    <div className="max-w-md mx-auto mt-10 bg-gray-200 rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold mb-4 text-center text-indigo-700">Gia hạn hợp đồng</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">

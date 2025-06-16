@@ -15,9 +15,16 @@
   font-family: 'CustomFont';
   src: url('./assets/font/Space_Grotesk/static/SpaceGrotesk-Medium.ttf') format('truetype');
 }
-
+@font-face {
+  font-family: 'SoDo Sans';
+  src: url('./assets/fonts/Space_Grotesk/SoDoSans-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
 body {
-  font-family: 'CustomFont', sans-serif;
+  font-family: 'SoDo Sans',  sans-serif;
+  
 }
 
 .justify-between {

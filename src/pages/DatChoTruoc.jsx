@@ -52,7 +52,7 @@ export default function DatChoTruoc() {
   };
 
   return (
-    <div className="p-4 max-w-xl mx-auto bg-white rounded shadow">
+    <div className="p-4 max-w-xl mx-auto bg-gray-200 mt-3 rounded shadow">
       <h2 className="text-2xl font-bold mb-4 text-blue-600">Đặt chỗ trước</h2>
       <p className="mb-6">Chức năng đặt chỗ trước phòng nội trú.</p>
 

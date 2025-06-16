@@ -1,51 +1,15 @@
-import React, { useState } from 'react';
-import api from '../services/api';
-import Modal from '../components/Modal'; // 🆕 Import Modal component
+import React, { useState } from "react";
+import api from "../services/api";
+import Modal from "../components/Modal";
 
 export default function Dashboard({ user }) {
-  const [showForm, setShowForm] = useState(false);
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [sdt, setSdt] = useState(user.sdt || '');
-  const [email, setEmail] = useState(user.email || '');
-  const [sdtGiaDinh, setSdtGiaDinh] = useState(user.sdtGiaDinh || '');
+  const [sdt, setSdt] = useState(user.sdt || "");
+  const [email, setEmail] = useState(user.email || "");
+  const [sdtGiaDinh, setSdtGiaDinh] = useState(user.sdtGiaDinh || "");
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [showMessageModal, setShowMessageModal] = useState(false);
-
-  const handleChangePassword = async () => {
-    if (newPassword !== confirmPassword) {
-      setMessage({ type: 'error', text: 'Mật khẩu xác nhận không khớp' });
-      setShowMessageModal(true);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await api.changePassword({
-        maSV: user.maSV,
-        oldPassword,
-        newPassword,
-      });
-
-      if (res.status === 'success') {
-        setMessage({ type: 'success', text: res.message });
-        setShowForm(false);
-        setOldPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-      } else {
-        setMessage({ type: 'error', text: res.message });
-      }
-    } catch (err) {
-      setMessage({ type: 'error', text: 'Lỗi kết nối máy chủ' });
-    } finally {
-      setLoading(false);
-      setShowMessageModal(true);
-    }
-  };
 
   const handleUpdateInfo = async () => {
     setLoading(true);
@@ -57,14 +21,14 @@ export default function Dashboard({ user }) {
         sdtGiaDinh,
       });
 
-      if (res.status === 'success') {
-        setMessage({ type: 'success', text: 'Cập nhật thành công' });
+      if (res.status === "success") {
+        setMessage({ type: "success", text: "Cập nhật thành công" });
         setEditMode(false);
       } else {
-        setMessage({ type: 'error', text: res.message });
+        setMessage({ type: "error", text: res.message });
       }
     } catch (err) {
-      setMessage({ type: 'error', text: 'Lỗi máy chủ khi cập nhật thông tin' });
+      setMessage({ type: "error", text: "Lỗi máy chủ khi cập nhật thông tin" });
     } finally {
       setLoading(false);
       setShowMessageModal(true);
@@ -72,11 +36,11 @@ export default function Dashboard({ user }) {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-white rounded shadow">
+    <div className="bg-gray-200 p-6 mt-3 max-w-3xl mx-auto rounded-lg shadow">
       <h2 className="text-2xl mb-4 font-semibold text-blue-600">Thông tin cá nhân</h2>
       <div className="flex items-center gap-6 mb-6">
         <img
-          src={`/uploads/${user.anhDaiDien}`}
+          src={`${user.anhDaiDien ? `/uploads/${user.anhDaiDien}` : "src/assets/images/user.png"}`}
           alt="Avatar"
           className="w-24 h-24 rounded-full object-cover border"
         />
@@ -92,128 +56,74 @@ export default function Dashboard({ user }) {
         <li><strong>Giới tính:</strong> {user.gioiTinh}</li>
         <li><strong>Ngày sinh:</strong> {user.ngaySinh}</li>
         <li><strong>Lớp:</strong> {user.lop}</li>
-
         <li>
-          <strong>SĐT:</strong>{' '}
+          <strong>SĐT:</strong>{" "}
           {editMode ? (
             <input
               type="text"
               value={sdt}
               onChange={(e) => setSdt(e.target.value)}
-              className="border px-2 py-1 rounded w-full"
+              className="border px-2 py-1 rounded-lg w-full"
             />
           ) : (
             sdt
           )}
         </li>
-
         <li>
-          <strong>Email:</strong>{' '}
+          <strong>Email:</strong>{" "}
           {editMode ? (
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="border px-2 py-1 rounded w-full"
+              className="border px-2 py-1 rounded-lg w-full"
             />
           ) : (
             email
           )}
         </li>
-
         <li>
-          <strong>SĐT Gia Đình:</strong>{' '}
+          <strong>SĐT Gia Đình:</strong>{" "}
           {editMode ? (
             <input
               type="text"
               value={sdtGiaDinh}
               onChange={(e) => setSdtGiaDinh(e.target.value)}
-              className="border px-2 py-1 rounded w-full"
+              className="border px-2 py-1 rounded-lg w-full"
             />
           ) : (
-            sdtGiaDinh || 'Chưa có'
+            sdtGiaDinh || "Chưa có"
           )}
         </li>
-
         <li><strong>Trạng thái:</strong> {user.trangThai}</li>
-        <li><strong>Khoa:</strong> {user.tenKhoa} ({user.maKhoa})</li>
+        <li>
+          <strong>Khoa:</strong> {user.tenKhoa} ({user.maKhoa})
+        </li>
       </ul>
 
       <div className="mb-4 space-x-4">
         <button
           onClick={() => setEditMode(!editMode)}
-          className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 transition"
+          className="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition"
         >
           {editMode ? "Huỷ chỉnh sửa" : "Chỉnh sửa thông tin"}
         </button>
-
         {editMode && (
           <button
             onClick={handleUpdateInfo}
             disabled={loading}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
           >
             {loading ? "Đang lưu..." : "Lưu thay đổi"}
           </button>
         )}
       </div>
 
-      <div className="mb-4">
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-        >
-          {showForm ? "Huỷ" : "Đổi mật khẩu"}
-        </button>
-      </div>
-
-      {showForm && (
-        <div className="bg-gray-50 border p-4 rounded shadow-sm space-y-4">
-          <div>
-            <label className="block text-sm font-medium">Mật khẩu cũ</label>
-            <input
-              type="password"
-              className="mt-1 w-full border rounded px-3 py-2"
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Mật khẩu mới</label>
-            <input
-              type="password"
-              className="mt-1 w-full border rounded px-3 py-2"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Xác nhận mật khẩu</label>
-            <input
-              type="password"
-              className="mt-1 w-full border rounded px-3 py-2"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </div>
-
-          <button
-            onClick={handleChangePassword}
-            disabled={loading}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-          >
-            {loading ? "Đang xử lý..." : "Xác nhận đổi mật khẩu"}
-          </button>
-        </div>
-      )}
-
-      {/* ✅ Modal hiển thị thông báo */}
+      {/* Message Modal */}
       <Modal
         isOpen={showMessageModal}
         onClose={() => setShowMessageModal(false)}
-        title={message?.type === 'error' ? 'Lỗi' : 'Thành công'}
+        title={message?.type === "error" ? "Lỗi" : "Thành công"}
       >
         <p className="text-base">{message?.text}</p>
       </Modal>
