@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-export default function HoaDonThanhToan() {
+export default function HoaDon() {
   const [maSV, setMaSV] = useState("");
-  const [danhSachPhieuThu, setDanhSachPhieuThu] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [hoaDonData, setHoaDonData] = useState([]);
+  const [hoTen, setHoTen] = useState("");
+  const [ngayTu, setNgayTu] = useState("");
+  const [ngayDen, setNgayDen] = useState("");
+  const [loaiKhoanThu, setLoaiKhoanThu] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const pageSize = 10;
+
+  const loaiKhoanThuOptions = ["Tiền Điện", "Tiền Nước", "Hợp Đồng Nội Trú"];
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -13,78 +21,166 @@ export default function HoaDonThanhToan() {
   }, []);
 
   useEffect(() => {
-    if (!maSV) return;
+    if (maSV) fetchData();
+  }, [maSV, currentPage]);
 
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get(
-          `https://localhost:5181/api/PhieuThu/phieu-thu-da-thanh-toan?maSV=${maSV}`
-        );
-        setDanhSachPhieuThu(res.data);
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách phiếu thu:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      const res = await axios.post("https://localhost:5181/api/PhieuThu/phieuthu/loc-nang-cao", {
+        MaSV: maSV,
+        TenSinhVien: hoTen.trim() || null,
+        NgayLapTu: ngayTu || null,
+        NgayLapDen: ngayDen || null,
+        LoaiKhoanThu: loaiKhoanThu.length > 0 ? loaiKhoanThu : null,
+        Page: currentPage,
+        PageSize: pageSize,
+      });
 
+      setHoaDonData(res.data.data || []);
+      setTotalRecords(res.data.totalRecords || 0);
+    } catch (error) {
+      console.error("Lỗi khi tải dữ liệu:", error);
+    }
+  };
+
+  const handleSearch = () => {
+    setCurrentPage(1);
     fetchData();
-  }, [maSV]);
+  };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4 text-center text-blue-700">Hóa đơn đã thanh toán</h2>
+    <div className="p-6 max-w-7xl mx-auto">
+      <h2 className="text-2xl font-bold mb-6 text-center text-blue-700">Lọc & Danh sách hóa đơn</h2>
 
-      {loading ? (
-        <p className="text-center text-gray-500">Đang tải dữ liệu...</p>
-      ) : danhSachPhieuThu.length === 0 ? (
-        <p className="text-center text-gray-600">Không có phiếu thu nào đã thanh toán.</p>
-      ) : (
-        <div className="overflow-x-auto rounded-md shadow-md border border-gray-300">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-blue-600 text-white">
+      {/* Bộ lọc */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div>
+          <label className="block text-sm font-medium">Họ tên sinh viên</label>
+          <input
+            type="text"
+            value={hoTen}
+            onChange={(e) => setHoTen(e.target.value)}
+            className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">Ngày lập từ</label>
+          <input
+            type="date"
+            value={ngayTu}
+            onChange={(e) => setNgayTu(e.target.value)}
+            className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium">Ngày lập đến</label>
+          <input
+            type="date"
+            value={ngayDen}
+            onChange={(e) => setNgayDen(e.target.value)}
+            className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm"
+          />
+        </div>
+        <div className="md:col-span-3">
+          <label className="block text-sm font-medium mb-1">Loại khoản thu</label>
+          <div className="flex flex-wrap gap-4">
+            {loaiKhoanThuOptions.map((option) => (
+              <label key={option} className="inline-flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  value={option}
+                  checked={loaiKhoanThu.includes(option)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setLoaiKhoanThu([...loaiKhoanThu, option]);
+                    } else {
+                      setLoaiKhoanThu(loaiKhoanThu.filter((item) => item !== option));
+                    }
+                  }}
+                  className="form-checkbox h-4 w-4 text-blue-600"
+                />
+                <span className="text-sm">{option}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mb-6">
+        <button
+          onClick={handleSearch}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        >
+          Tìm kiếm
+        </button>
+      </div>
+
+      {/* Bảng kết quả */}
+      <div className="overflow-x-auto border rounded-md shadow">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-blue-600 text-white">
+            <tr>
+              <th className="px-4 py-2 text-left text-sm font-medium">Mã phiếu thu</th>
+              <th className="px-4 py-2 text-left text-sm font-medium">Họ tên</th>
+              <th className="px-4 py-2 text-left text-sm font-medium">Ngày lập</th>
+              <th className="px-4 py-2 text-left text-sm font-medium">Tổng tiền</th>
+              <th className="px-4 py-2 text-left text-sm font-medium">Trạng thái</th>
+              <th className="px-4 py-2 text-left text-sm font-medium">Loại khoản thu</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {hoaDonData.length === 0 ? (
               <tr>
-                {[
-                  "Mã Phiếu Thu",
-                  "Ngày Lập",
-                  "Tổng Tiền",
-                  "Trạng Thái",
-                  "Nhân Viên",
-                  "Loại Khoản Thu",
-                ].map((header) => (
-                  <th
-                    key={header}
-                    className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider"
-                  >
-                    {header}
-                  </th>
-                ))}
+                <td colSpan={6} className="px-4 py-4 text-center text-gray-500">
+                  Không có dữ liệu
+                </td>
               </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {danhSachPhieuThu.map((phieu, idx) => (
-                <tr key={idx} className="hover:bg-blue-50 transition-colors duration-200">
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{phieu.maPhieuThu}</td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {new Date(phieu.ngayLap).toLocaleDateString("vi-VN")}
+            ) : (
+              hoaDonData.map((item, idx) => (
+                <tr key={idx}>
+                  <td className="px-4 py-2">{item.maPhieuThu}</td>
+                  <td className="px-4 py-2">{item.hoTen}</td>
+                  <td className="px-4 py-2">
+                    {new Date(item.ngayLap).toLocaleDateString("vi-VN")}
                   </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {phieu.tongTien.toLocaleString("vi-VN")} ₫
+                  <td className="px-4 py-2">
+                    {item.tongTien.toLocaleString("vi-VN")} ₫
                   </td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{phieu.trangThai}</td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{phieu.tenNhanVien}</td>
-                  <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {Array.isArray(phieu.loaiKhoanThu)
-                      ? phieu.loaiKhoanThu.join(", ")
-                      : ""}
+                  <td className="px-4 py-2">{item.trangThai}</td>
+                  <td className="px-4 py-2">
+                    {item.chiTietPhieuThu?.map((ct, i) => (
+                      <span key={i} className="inline-block mr-2">
+                        {ct.loaiKhoanThu}
+                      </span>
+                    ))}
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Phân trang */}
+      <div className="flex justify-between items-center mt-6">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((prev) => prev - 1)}
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+        >
+          Trang trước
+        </button>
+        <span className="text-sm">
+          Trang {currentPage} / {Math.ceil(totalRecords / pageSize) || 1}
+        </span>
+        <button
+          disabled={currentPage >= Math.ceil(totalRecords / pageSize)}
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+        >
+          Trang sau
+        </button>
+      </div>
     </div>
   );
 }

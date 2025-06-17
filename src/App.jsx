@@ -18,7 +18,7 @@ import ThanhToan from "./pages/ThanhToan";
 import HuyThanhToan from "./pages/HuyThanhToan";
 import KetQuaThanhToan from "./pages/KetQuaThanhToan";
 import ForgotPassword from "./pages/ForgotPassword";
-
+import DiemDanh from "./pages/DiemDanh";
 export default function App() {
   // Initialize user state with data from localStorage
   const [user, setUser] = useState(() => {
@@ -64,6 +64,8 @@ export default function App() {
           <Route path="/sinhvien/datcho" element={user ? <DatChoTruoc /> : <Navigate to="/login" replace />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/sinhvien/tracuu" element={user ? <TraCuuThongTin /> : <Navigate to="/login" replace />} />
+          <Route path="/vipham" element={user ? <h1>Danh sách vi phạm</h1> : <Navigate to="/login" replace />} />
+          <Route path="/diemdanh" element={user ? <DiemDanh /> : <Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />
         </Routes>
       </main>

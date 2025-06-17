@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../services/api";
 import { useState } from "react";
 import BackgroundSlideshow from "../components/BackgroundSlideshow";
-import DarkModeToggle from "../components/DarkModeToggle";
+
 
 export default function Login({ setUser }) {
   const [tenDangNhap, setTenDangNhap] = useState("");
@@ -40,7 +40,7 @@ export default function Login({ setUser }) {
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden text-white dark:text-black">
       <BackgroundSlideshow />
-      <DarkModeToggle />
+      
 
       <form
         onSubmit={handleSubmit}

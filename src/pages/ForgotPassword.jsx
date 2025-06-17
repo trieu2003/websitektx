@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import BackgroundSlideshow from "../components/BackgroundSlideshow";
-import DarkModeToggle from "../components/DarkModeToggle";
+
 
 export default function ForgotPassword() {
   const [step, setStep] = useState(1);
