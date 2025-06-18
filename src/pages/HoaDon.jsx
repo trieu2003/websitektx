@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+const LOCAL_STORAGE_KEY = "hoadon_boloc";
+
 export default function HoaDon() {
   const [maSV, setMaSV] = useState("");
   const [hoaDonData, setHoaDonData] = useState([]);
@@ -20,9 +22,34 @@ export default function HoaDon() {
     setMaSV(ma);
   }, []);
 
+  // Load bộ lọc từ localStorage
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+    if (saved) {
+      setHoTen(saved.hoTen || "");
+      setNgayTu(saved.ngayTu || "");
+      setNgayDen(saved.ngayDen || "");
+      setLoaiKhoanThu(saved.loaiKhoanThu || []);
+    }
+  }, []);
+
   useEffect(() => {
     if (maSV) fetchData();
-  }, [maSV, currentPage]);
+  }, [maSV]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!maSV) return;
+      fetchData();
+      // Lưu lại bộ lọc
+      localStorage.setItem(
+        LOCAL_STORAGE_KEY,
+        JSON.stringify({ hoTen, ngayTu, ngayDen, loaiKhoanThu })
+      );
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [hoTen, ngayTu, ngayDen, loaiKhoanThu, currentPage]);
 
   const fetchData = async () => {
     try {
@@ -43,9 +70,13 @@ export default function HoaDon() {
     }
   };
 
-  const handleSearch = () => {
+  const handleClearFilters = () => {
+    setHoTen("");
+    setNgayTu("");
+    setNgayDen("");
+    setLoaiKhoanThu([]);
     setCurrentPage(1);
-    fetchData();
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
   };
 
   return (
@@ -53,7 +84,7 @@ export default function HoaDon() {
       <h2 className="text-2xl font-bold mb-6 text-center text-blue-700">Lọc & Danh sách hóa đơn</h2>
 
       {/* Bộ lọc */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div>
           <label className="block text-sm font-medium">Họ tên sinh viên</label>
           <input
@@ -81,37 +112,39 @@ export default function HoaDon() {
             className="mt-1 block w-full rounded-md border px-3 py-2 shadow-sm"
           />
         </div>
-        <div className="md:col-span-3">
-          <label className="block text-sm font-medium mb-1">Loại khoản thu</label>
-          <div className="flex flex-wrap gap-4">
-            {loaiKhoanThuOptions.map((option) => (
-              <label key={option} className="inline-flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  value={option}
-                  checked={loaiKhoanThu.includes(option)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setLoaiKhoanThu([...loaiKhoanThu, option]);
-                    } else {
-                      setLoaiKhoanThu(loaiKhoanThu.filter((item) => item !== option));
-                    }
-                  }}
-                  className="form-checkbox h-4 w-4 text-blue-600"
-                />
-                <span className="text-sm">{option}</span>
-              </label>
-            ))}
-          </div>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-1">Loại khoản thu</label>
+        <div className="flex flex-wrap gap-4">
+          {loaiKhoanThuOptions.map((option) => (
+            <label key={option} className="inline-flex items-center gap-2">
+              <input
+                type="checkbox"
+                value={option}
+                checked={loaiKhoanThu.includes(option)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setLoaiKhoanThu([...loaiKhoanThu, option]);
+                  } else {
+                    setLoaiKhoanThu(loaiKhoanThu.filter((item) => item !== option));
+                  }
+                }}
+                className="form-checkbox h-4 w-4 text-blue-600"
+              />
+              <span className="text-sm">{option}</span>
+            </label>
+          ))}
         </div>
       </div>
 
-      <div className="mb-6">
+      {/* Nút xoá lọc */}
+      <div className="mb-6 text-right">
         <button
-          onClick={handleSearch}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          onClick={handleClearFilters}
+          className="text-sm text-blue-600 hover:underline"
         >
-          Tìm kiếm
+          Xóa bộ lọc
         </button>
       </div>
 

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Table from "../components/Table";
 
+const LOCAL_STORAGE_KEY = "diemdanh_boloc";
+
 export default function DiemDanh() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,12 +32,34 @@ export default function DiemDanh() {
     const user = JSON.parse(localStorage.getItem("user"));
     const ma = user?.maSV || user?.MaSV || "";
     setMaSV(ma);
+
+    // Lấy bộ lọc từ localStorage
+    const saved = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+    if (saved) {
+      setTuNgay(saved.tuNgay || "");
+      setDenNgay(saved.denNgay || "");
+      setTrangThai(saved.trangThai || "");
+    }
   }, []);
 
   useEffect(() => {
     if (!maSV) return;
-    fetchData(); // tự fetch khi có maSV ban đầu
+    fetchData(); // Gọi API lần đầu khi có mã SV
   }, [maSV]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!maSV) return;
+      fetchData();
+      // Lưu bộ lọc vào localStorage
+      localStorage.setItem(
+        LOCAL_STORAGE_KEY,
+        JSON.stringify({ tuNgay, denNgay, trangThai })
+      );
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [tuNgay, denNgay, trangThai]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -54,6 +78,14 @@ export default function DiemDanh() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleClearFilters = () => {
+    setTuNgay("");
+    setDenNgay("");
+    setTrangThai("");
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    fetchData();
   };
 
   return (
@@ -100,11 +132,17 @@ export default function DiemDanh() {
         >
           Tìm kiếm
         </button>
+        <button
+          onClick={handleClearFilters}
+          className="text-sm text-blue-600 hover:underline"
+        >
+          Xóa bộ lọc
+        </button>
       </div>
 
       {/* Bảng dữ liệu */}
       {loading ? (
-        <p>Đang tải dữ liệu...</p>
+        <p className="text-center text-gray-500">Đang tải dữ liệu...</p>
       ) : (
         <Table columns={columns} data={data} />
       )}
