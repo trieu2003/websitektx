@@ -33,7 +33,7 @@ const ThanhToanHoaDon = () => {
         const data = await res.json();
         if (res.ok) {
           setDanhSach(data);
-          const nhomTruong = data.some((p) => p.maSV !== maSV); // Nếu có phiếu người khác → là trưởng nhóm
+          const nhomTruong = data.some((p) => p.maSV !== maSV); // Nếu có phiếu của người khác → là trưởng nhóm
           setIsNhomTruong(nhomTruong);
         } else {
           alert(data.message || "Không lấy được phiếu thu.");
@@ -104,6 +104,15 @@ const ThanhToanHoaDon = () => {
   const closeModal = () => {
     setSelectedPhieu(null);
     setModalMessage("");
+  };
+
+  const canPayPhieu = (phieu) => {
+    if (isNhomTruong) return true; // Nhóm trưởng có thể thanh toán tất cả phiếu
+    return (
+      phieu.maSV === maSV &&
+      phieu.trangThai === "Chưa thanh toán" &&
+      phieu.loaiKhoanThu === "Hợp Đồng Nội Trú"
+    ); // Sinh viên thường chỉ thanh toán phiếu của mình với loại "Hợp Đồng Nội Trú"
   };
 
   return (
@@ -180,19 +189,17 @@ const ThanhToanHoaDon = () => {
                       {phieu.maNV || "Không rõ"}
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      {phieu.chiTietPhieuThu?.map(c => c.loaiKhoanThu).join(", ")}
+                      {phieu.loaiKhoanThu}
                     </td>
                     <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      {!isNhomTruong &&
-                        phieu.trangThai === "Chưa thanh toán" &&
-                        phieu.maSV === maSV && (
-                          <button
-                            className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700"
-                            onClick={() => setSelectedPhieu(phieu)}
-                          >
-                            Thanh toán
-                          </button>
-                        )}
+                      {canPayPhieu(phieu) && (
+                        <button
+                          className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700"
+                          onClick={() => setSelectedPhieu(phieu)}
+                        >
+                          Thanh toán
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -225,10 +232,7 @@ const ThanhToanHoaDon = () => {
               </strong>
             </p>
             <p>
-              Loại khoản thu:{" "}
-              {selectedPhieu.chiTietPhieuThu
-                ?.map((c) => c.loaiKhoanThu)
-                .join(", ")}
+              Loại khoản thu: <strong>{selectedPhieu.loaiKhoanThu}</strong>
             </p>
           </>
         )}
