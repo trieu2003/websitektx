@@ -22,7 +22,7 @@ const sidebarMenu = [
   {
     title: "Thanh toán",
     children: [
-      { title: "Hóa đơn", to: "/sinhvien/hoadon" },
+      { title: "Hóa đơn & Điện Nước", to: "/sinhvien/hoadon" },
       { title: "Thanh toán", to: "/sinhvien/thanhtoan" },
     ],
   },
@@ -30,8 +30,8 @@ const sidebarMenu = [
     title: "Tiện ích",
     children: [
       { title: "Gửi yêu cầu sửa chữa", to: "/sinhvien/suachua" },
+      { title: "Nội Quy", to: "/noiquy" },
       { title: "Đặt chỗ trước", to: "/sinhvien/datcho" },
-      { title: "Tra cứu thông tin", to: "/sinhvien/tracuu" },
       { title: "Danh sách vi phạm", to: "/vipham" },
       { title: "Danh sách điểm danh", to: "/diemdanh" },
     ],
