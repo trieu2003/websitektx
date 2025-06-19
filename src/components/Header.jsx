@@ -113,7 +113,7 @@ export default function Header({ user, setUser }) {
 
   return (
     <>
-      <header className="bg-blue-600 text-white p-4 relative z-50">
+      <header className="bg-blue-500 text-white p-4 relative z-50">
         <div className="flex items-center justify-between mb-4">
           <Link to="/dashboard" className="flex items-center">
             <img
@@ -123,7 +123,7 @@ export default function Header({ user, setUser }) {
             />
           </Link>
           <Link to="/dashboard" className="flex items-center">
-            <h1 className="text-lg font-bold text-center flex-1">
+            <h1 className="text-lg text-yellow-500 font-bold text-center flex-1">
               ỨNG DỤNG QUẢN LÝ KÝ TÚC XÁ <br />
               TRƯỜNG ĐẠI HỌC CÔNG THƯƠNG TP HỒ CHÍ MINH
             </h1>
