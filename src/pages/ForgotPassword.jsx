@@ -86,7 +86,6 @@ export default function ForgotPassword() {
   return (
     <div className="relative min-h-screen flex items-center justify-center text-white dark:text-black">
       <BackgroundSlideshow />
-      <DarkModeToggle />
 
       <div className="relative z-10 w-full max-w-md bg-white/10 dark:bg-black/30 backdrop-blur-xl rounded-2xl p-8 shadow-lg space-y-6 text-center">
         <h2 className="text-2xl font-bold">
