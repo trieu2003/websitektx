@@ -55,10 +55,9 @@ export default function GuiYeuCauSuaChua() {
       setIsSuccess(success);
 
       if (success) {
-        // Huỷ thành công: đóng modal sau 1s và reset
         fetchDsYeuCau(maSV);
         setTimeout(() => {
-          handleCloseModal(); // Đóng modal và reset pendingCancelId
+          handleCloseModal();
         }, 1000);
       }
     } catch (err) {
@@ -241,14 +240,14 @@ export default function GuiYeuCauSuaChua() {
                             setMessage("Bạn có chắc muốn hủy yêu cầu này?");
                             setIsSuccess(null);
                           }}
-                          disabled={yc.trangThai === "Đã hủy"}
+                          disabled={yc.trangThai === "Đã hủy" || yc.trangThai === "Đang xử lý"}
                           className={`px-3 py-1 rounded text-white ${
-                            yc.trangThai === "Đã hủy"
+                            yc.trangThai === "Đã hủy" || yc.trangThai === "Đang xử lý"
                               ? "bg-gray-400 cursor-not-allowed"
                               : "bg-red-500 hover:bg-red-600"
                           }`}
                         >
-                          {yc.trangThai === "Đã hủy" ? "Đã hủy" : "Hủy"}
+                          {yc.trangThai === "Đã hủy" ? "Đã hủy" : yc.trangThai === "Đang xử lý" ? "Đang xử lý" : "Hủy"}
                         </button>
                       </td>
                     </tr>
